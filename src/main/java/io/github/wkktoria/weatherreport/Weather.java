@@ -1,49 +1,85 @@
 package io.github.wkktoria.weatherreport;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
+import java.util.Optional;
+import java.util.Scanner;
 
 class Weather {
-    private String location;
-    private BigDecimal temperature;
-    private BigDecimal humidity;
-    private String imageUrlString;
+    private final String apiUrlString;
+    private final String apiKey;
+    private Optional<JSONObject> json;
 
-    Weather(final String location, final BigDecimal temperature, final BigDecimal humidity, final String imageUrlString) {
-        this.location = location;
-        this.temperature = temperature;
-        this.humidity = humidity;
-        this.imageUrlString = imageUrlString;
+    Weather(String location, String apiKey) {
+        this.apiKey = apiKey;
+        apiUrlString = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey);
+        json = createJsonObject(location);
     }
 
-    String getLocation() {
-        return location;
+    Optional<Image> createImage() {
+        try {
+            String iconCode;
+            Optional<JSONArray> weatherJsonArray = getWeatherJsonArray();
+            if (json.isPresent() && weatherJsonArray.isPresent()) {
+                iconCode = weatherJsonArray.get().getJSONObject(0).getString("icon");
+                String imageUrlString = "https://openweathermap.org/img/wn/%s.png";
+                return Optional.of(ImageIO.read(new URI(String.format(imageUrlString, iconCode)).toURL()));
+            }
+        } catch (IOException | URISyntaxException e) {
+            return Optional.empty();
+        }
+        return Optional.empty();
     }
 
-    void setLocation(final String location) {
-        this.location = location;
+    Optional<JSONObject> getJson() {
+        return json;
     }
 
-    BigDecimal getTemperature() {
-        return temperature;
+    void setJson(final String location) {
+        json = createJsonObject(location);
     }
 
-    void setTemperature(final BigDecimal temperature) {
-        this.temperature = temperature;
+    Optional<String> getLocation() {
+        return json.map(j -> j.getString("name"));
     }
 
-    BigDecimal getHumidity() {
-        return humidity;
+    Optional<BigDecimal> getTemperature() {
+        Optional<JSONObject> mainJsonObject = getMainJsonObject();
+        return mainJsonObject.map(jsonObject -> jsonObject.getBigDecimal("temp"));
     }
 
-    void setHumidity(final BigDecimal humidity) {
-        this.humidity = humidity;
+    Optional<BigDecimal> getHumidity() {
+        Optional<JSONObject> mainJsonObject = getMainJsonObject();
+        return mainJsonObject.map(jsonObject -> jsonObject.getBigDecimal("humidity"));
     }
 
-    String getImageUrlString() {
-        return imageUrlString;
+    private Optional<JSONObject> getMainJsonObject() {
+        return json.map(jsonObject -> jsonObject.getJSONObject("main"));
     }
 
-    void setImageUrlString(final String imageUrlString) {
-        this.imageUrlString = imageUrlString;
+    private Optional<JSONArray> getWeatherJsonArray() {
+        return json.map(jsonObject -> jsonObject.getJSONArray("weather"));
+    }
+
+    private Optional<JSONObject> createJsonObject(final String location) {
+        try {
+            URI uri = new URI(String.format(String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey)));
+            URLConnection connection = uri.toURL().openConnection();
+            InputStream inputStream = connection.getInputStream();
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+            String response = scanner.hasNext() ? scanner.next() : "";
+            return Optional.of(new JSONObject(response));
+        } catch (URISyntaxException | IOException e) {
+            return Optional.empty();
+        }
     }
 }
