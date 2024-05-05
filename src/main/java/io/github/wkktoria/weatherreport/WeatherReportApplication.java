@@ -98,15 +98,15 @@ class WeatherReportApplication {
             return;
         }
 
-        weather.setJson(locationField.getText());
+        weather.setJson(locationField.getText().trim());
 
         if (weather.getJson().isEmpty()) {
-            System.out.println("Could not create weather JSON");
+            JOptionPane.showMessageDialog(null, String.format("Could not create weather JSON for desired location (%s).", locationField.getText()), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (weather.getLocation().isEmpty() || weather.getTemperature().isEmpty() || weather.getHumidity().isEmpty()) {
-            System.out.println("Could not get weather data");
+            JOptionPane.showMessageDialog(null, "Could not get weather data.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
