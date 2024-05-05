@@ -72,7 +72,7 @@ class Weather {
 
     private Optional<JSONObject> createJsonObject(final String location) {
         try {
-            URI uri = new URI(String.format(String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey)));
+            URI uri = new URI(String.format(String.format(apiUrlString, location, apiKey)));
             URLConnection connection = uri.toURL().openConnection();
             InputStream inputStream = connection.getInputStream();
             Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
