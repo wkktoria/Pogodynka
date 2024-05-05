@@ -20,12 +20,12 @@ class WeatherReportApplication {
         String apiKey = System.getenv("WEATHER_API_KEY");
         Weather weather;
 
-        if (apiKey.trim().isEmpty()) {
+        if (apiKey == null || apiKey.isEmpty()) {
             System.out.println("Please provide a API key");
             System.exit(1);
         }
 
-        weather = new Weather("Warsaw", apiKey);
+        weather = new Weather("Warsaw", apiKey.trim());
         if (weather.getJson().isEmpty()) {
             System.out.println("Could not create weather JSON");
             System.exit(1);
