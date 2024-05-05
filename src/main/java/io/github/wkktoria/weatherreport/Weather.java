@@ -15,13 +15,11 @@ import java.util.Optional;
 import java.util.Scanner;
 
 class Weather {
-    private final String apiUrlString;
     private final String apiKey;
     private Optional<JSONObject> json;
 
     Weather(String location, String apiKey) {
         this.apiKey = apiKey;
-        apiUrlString = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey);
         json = createJsonObject(location);
     }
 
@@ -45,7 +43,8 @@ class Weather {
     }
 
     void setJson(final String location) {
-        json = createJsonObject(location);
+        System.out.println("set location: " + location);
+        this.json = createJsonObject(location);
     }
 
     Optional<String> getLocation() {
@@ -72,7 +71,7 @@ class Weather {
 
     private Optional<JSONObject> createJsonObject(final String location) {
         try {
-            URI uri = new URI(String.format(String.format(apiUrlString, location, apiKey)));
+            URI uri = new URI(String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey));
             URLConnection connection = uri.toURL().openConnection();
             InputStream inputStream = connection.getInputStream();
             Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
