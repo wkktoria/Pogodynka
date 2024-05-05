@@ -2,6 +2,7 @@ package io.github.wkktoria.weatherreport;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 
 class WeatherReportApplication {
     public static void main(String[] args) {
@@ -10,6 +11,7 @@ class WeatherReportApplication {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        frame.setLayout(new FlowLayout());
 
         String apiKey = System.getenv("WEATHER_API_KEY");
         Weather weather;
@@ -30,10 +32,18 @@ class WeatherReportApplication {
             System.exit(1);
         }
 
-        System.out.println(weather.getLocation());
-        System.out.println(weather.getTemperature());
-        System.out.println(weather.getHumidity());
+        Optional<Image> weatherImage = weather.createImage();
+        JLabel imageLabel = new JLabel();
+        JLabel locationLabel = new JLabel("Location: " + weather.getLocation().get());
+        JLabel temperatureLabel = new JLabel("Temperature: " + weather.getTemperature().get() + "°C");
+        JLabel humidityLabel = new JLabel("Humidity: " + weather.getHumidity().get() + "%");
 
+        weatherImage.ifPresent(image -> imageLabel.setIcon(new ImageIcon(image)));
+
+        frame.add(imageLabel);
+        frame.add(locationLabel);
+        frame.add(temperatureLabel);
+        frame.add(humidityLabel);
 
         frame.setVisible(true);
     }
