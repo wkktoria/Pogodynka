@@ -2,6 +2,8 @@ package io.github.wkktoria.weatherreport;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Optional;
 
 class WeatherReportApplication {
@@ -34,17 +36,72 @@ class WeatherReportApplication {
 
         Optional<Image> weatherImage = weather.createImage();
         JLabel imageLabel = new JLabel();
+        weatherImage.ifPresent(image -> imageLabel.setIcon(new ImageIcon(image)));
+
         JLabel locationLabel = new JLabel("Location: " + weather.getLocation().get());
         JLabel temperatureLabel = new JLabel("Temperature: " + weather.getTemperature().get() + "°C");
         JLabel humidityLabel = new JLabel("Humidity: " + weather.getHumidity().get() + "%");
 
-        weatherImage.ifPresent(image -> imageLabel.setIcon(new ImageIcon(image)));
+        JTextField locationField = new JTextField();
+        locationField.setPreferredSize(new Dimension(200, 20));
+        locationField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(final KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(final KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    searchWeather(weather, imageLabel, locationLabel, temperatureLabel, humidityLabel, locationField);
+                }
+            }
+
+            @Override
+            public void keyReleased(final KeyEvent e) {
+
+            }
+        });
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(e -> {
+            searchWeather(weather, imageLabel, locationLabel, temperatureLabel, humidityLabel, locationField);
+        });
 
         frame.add(imageLabel);
         frame.add(locationLabel);
         frame.add(temperatureLabel);
         frame.add(humidityLabel);
+        frame.add(locationField);
+        frame.add(searchButton);
 
         frame.setVisible(true);
+    }
+
+    private static void searchWeather(final Weather weather, final JLabel imageLabel, final JLabel locationLabel, final JLabel temperatureLabel, final JLabel humidityLabel, final JTextField locationField) {
+        if (locationField.getText().isEmpty()) {
+            return;
+        }
+
+        weather.setJson(locationField.getText());
+
+        if (weather.getJson().isEmpty()) {
+            System.out.println("Could not create weather JSON");
+            return;
+        }
+
+        if (weather.getLocation().isEmpty() || weather.getTemperature().isEmpty() || weather.getHumidity().isEmpty()) {
+            System.out.println("Could not get weather data");
+            return;
+        }
+
+        if (weather.createImage().isPresent()) {
+            imageLabel.setIcon(new ImageIcon(weather.createImage().get()));
+        }
+
+        locationLabel.setText("Location: " + weather.getLocation().get());
+        temperatureLabel.setText("Temperature: " + weather.getTemperature().get() + "°C");
+        humidityLabel.setText("Humidity: " + weather.getHumidity().get() + "%");
+
+        locationField.setText("");
     }
 }

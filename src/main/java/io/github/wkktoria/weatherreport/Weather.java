@@ -43,7 +43,6 @@ class Weather {
     }
 
     void setJson(final String location) {
-        System.out.println("set location: " + location);
         this.json = createJsonObject(location);
     }
 
