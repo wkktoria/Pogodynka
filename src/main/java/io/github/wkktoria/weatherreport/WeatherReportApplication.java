@@ -1,5 +1,8 @@
 package io.github.wkktoria.weatherreport;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -7,6 +10,8 @@ import java.awt.event.KeyListener;
 import java.util.Optional;
 
 class WeatherReportApplication {
+    private static final Logger logger = LoggerFactory.getLogger(WeatherReportApplication.class);
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("Weather Report");
         frame.setSize(new Dimension(400, 250));
@@ -21,18 +26,18 @@ class WeatherReportApplication {
         Weather weather;
 
         if (apiKey == null || apiKey.isEmpty()) {
-            System.out.println("Please provide a API key");
+            logger.error("API key was not provided");
             System.exit(1);
         }
 
         weather = new Weather("Warsaw", apiKey.trim());
         if (weather.getJson().isEmpty()) {
-            System.out.println("Could not create weather JSON");
+            logger.error("There was an error during getting data from API");
             System.exit(1);
         }
 
         if (weather.getLocation().isEmpty() || weather.getTemperature().isEmpty() || weather.getHumidity().isEmpty()) {
-            System.out.println("Could not get weather data");
+            logger.error("Could not gather the weather data");
             System.exit(1);
         }
 
@@ -101,12 +106,14 @@ class WeatherReportApplication {
         weather.setJson(locationField.getText().trim());
 
         if (weather.getJson().isEmpty()) {
-            JOptionPane.showMessageDialog(null, String.format("Could not create weather JSON for desired location (%s).", locationField.getText()), "Error", JOptionPane.ERROR_MESSAGE);
+            logger.error("There was an error during getting data from API for location: {}", locationField.getText().trim());
+            JOptionPane.showMessageDialog(null, String.format("Could not get weather data for desired location (%s).", locationField.getText()), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (weather.getLocation().isEmpty() || weather.getTemperature().isEmpty() || weather.getHumidity().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Could not get weather data.", "Error", JOptionPane.ERROR_MESSAGE);
+            logger.error("Could not gather the weather data for location: {}", locationField.getText().trim());
+            JOptionPane.showMessageDialog(null, "Could not gather the weather data.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
