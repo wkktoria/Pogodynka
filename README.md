@@ -2,4 +2,7 @@
 
 <h3 align="center">Weather application.</h3>
 
-![demo](demo.gif)
+<p align="center">
+    <img src="demo.gif"  alt="Demo of application"/> 
+</p>
+
