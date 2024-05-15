@@ -1,11 +1,8 @@
-<h1 align="center">weatherreport</h1>
+# Weather Report
 
-<h3 align="center">Weather application.</h3>
+![Demo of application](demo.gif)
 
-<p align="center">
-    <img src="demo.gif"  alt="Demo of application"/> <br>
-    • <a href="#run-application">Run Application</a> •
-</p>
+- [Run Application](#run-application)
 
 ## Run Application
 
