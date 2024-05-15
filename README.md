@@ -2,8 +2,6 @@
 
 ![Demo of application](demo.gif)
 
-- [Run Application](#run-application)
-
 ## Run Application
 
 1. Set environment variable with the API key.
