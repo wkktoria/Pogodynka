@@ -7,7 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Optional;
 
 class WeatherReportApplication {
     private static final Logger logger = LoggerFactory.getLogger(WeatherReportApplication.class);
@@ -23,23 +22,13 @@ class WeatherReportApplication {
         panel.setLayout(new FlowLayout());
 
         String apiKey = System.getenv("WEATHER_API_KEY");
-        Weather weather;
-
         if (apiKey == null || apiKey.isEmpty()) {
             logger.error("API key was not provided");
             System.exit(1);
         }
 
-        weather = new Weather("Warsaw", apiKey.trim());
-        if (weather.getJson().isEmpty()) {
-            logger.error("There was an error during getting data from API");
-            System.exit(1);
-        }
-
-        if (weather.getLocation().isEmpty() || weather.getTemperature().isEmpty() || weather.getHumidity().isEmpty()) {
-            logger.error("Could not gather the weather data");
-            System.exit(1);
-        }
+        WeatherJson weatherJson = new WeatherJson(apiKey);
+        Weather weather = weatherJson.createWeather("Warsaw");
 
         JPanel infoPanel = new JPanel();
         infoPanel.setPreferredSize(new Dimension(400, 150));
@@ -50,13 +39,13 @@ class WeatherReportApplication {
         inputPanel.setPreferredSize(new Dimension(400, 50));
         inputPanel.setLayout(new BorderLayout());
 
-        Optional<Image> weatherImage = weather.createImage();
+        Image weatherImage = weather.getImage();
         JLabel imageLabel = new JLabel();
-        weatherImage.ifPresent(image -> imageLabel.setIcon(new ImageIcon(image)));
+        imageLabel.setIcon(new ImageIcon(weatherImage));
 
-        JLabel locationLabel = new JLabel(weather.getLocation().get());
-        JLabel temperatureLabel = new JLabel("Temperature: " + weather.getTemperature().get() + "°C");
-        JLabel humidityLabel = new JLabel("Humidity: " + weather.getHumidity().get() + "%");
+        JLabel locationLabel = new JLabel(weather.getLocation());
+        JLabel temperatureLabel = new JLabel("Temperature: " + weather.getTemperature() + "°C");
+        JLabel humidityLabel = new JLabel("Humidity: " + weather.getHumidity() + "%");
 
         JTextField locationField = new JTextField();
         locationField.setPreferredSize(new Dimension(300, 50));
@@ -69,7 +58,7 @@ class WeatherReportApplication {
             @Override
             public void keyPressed(final KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    searchWeather(weather, imageLabel, locationLabel, temperatureLabel, humidityLabel, locationField);
+                    searchWeather(weatherJson, locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel);
                 }
             }
 
@@ -80,7 +69,7 @@ class WeatherReportApplication {
         });
         JButton searchButton = new JButton("Search");
         searchButton.setPreferredSize(new Dimension(100, 50));
-        searchButton.addActionListener(e -> searchWeather(weather, imageLabel, locationLabel, temperatureLabel, humidityLabel, locationField));
+        searchButton.addActionListener(e -> searchWeather(weatherJson, locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel));
 
         infoPanel.add(imageLabel);
         infoPanel.add(locationLabel);
@@ -98,33 +87,21 @@ class WeatherReportApplication {
         frame.setVisible(true);
     }
 
-    private static void searchWeather(final Weather weather, final JLabel imageLabel, final JLabel locationLabel, final JLabel temperatureLabel, final JLabel humidityLabel, final JTextField locationField) {
-        if (locationField.getText().isEmpty()) {
+    private static void searchWeather(final WeatherJson weatherJson, final JTextField locationField, final JLabel imageLabel, final JLabel locationLabel, final JLabel temperatureLabel, final JLabel humidityLabel) {
+        String location = locationField.getText();
+
+        if (location.isEmpty()) {
             return;
         }
 
-        weather.setJson(locationField.getText().trim());
+        Weather weather = weatherJson.createWeather(location.trim());
 
-        if (weather.getJson().isEmpty()) {
-            logger.error("There was an error during getting data from API for location: {}", locationField.getText().trim());
-            JOptionPane.showMessageDialog(null, String.format("Could not get weather data for desired location (%s).", locationField.getText()), "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (weather.getLocation().isEmpty() || weather.getTemperature().isEmpty() || weather.getHumidity().isEmpty()) {
-            logger.error("Could not gather the weather data for location: {}", locationField.getText().trim());
-            JOptionPane.showMessageDialog(null, "Could not gather the weather data.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (weather.createImage().isPresent()) {
-            imageLabel.setIcon(new ImageIcon(weather.createImage().get()));
-        }
-
-        locationLabel.setText(weather.getLocation().get());
-        temperatureLabel.setText("Temperature: " + weather.getTemperature().get() + "°C");
-        humidityLabel.setText("Humidity: " + weather.getHumidity().get() + "%");
+        locationLabel.setText(weather.getLocation());
+        temperatureLabel.setText("Temperature: " + weather.getTemperature() + "°C");
+        humidityLabel.setText("Humidity: " + weather.getHumidity() + "%");
+        imageLabel.setIcon(new ImageIcon(weather.getImage()));
 
         locationField.setText("");
     }
 }
+
