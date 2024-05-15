@@ -94,7 +94,13 @@ class WeatherReportApplication {
             return;
         }
 
-        Weather weather = weatherJson.createWeather(location.trim());
+        Weather weather;
+        try {
+            weather = weatherJson.createWeather(location);
+        } catch (WeatherJson.WeatherJsonException e) {
+            JOptionPane.showMessageDialog(null, String.format("Could not get weather for '%s'.", locationField.getText()), "Invalid location", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         locationLabel.setText(weather.getLocation());
         temperatureLabel.setText("Temperature: " + weather.getTemperature() + "°C");
