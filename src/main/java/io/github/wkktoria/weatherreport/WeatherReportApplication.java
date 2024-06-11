@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,6 +21,7 @@ class WeatherReportApplication {
 
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
+        panel.setBackground(new Color(27, 71, 120));
 
         String apiKey = System.getenv("WEATHER_API_KEY");
         if (apiKey == null || apiKey.isEmpty()) {
@@ -32,20 +34,26 @@ class WeatherReportApplication {
 
         JPanel infoPanel = new JPanel();
         infoPanel.setPreferredSize(new Dimension(400, 150));
-        infoPanel.setLayout(new GridLayout(2, 1));
-        infoPanel.setBackground(Color.LIGHT_GRAY);
+        infoPanel.setLayout(new GridLayout(2, 2));
+        infoPanel.setBorder(new EmptyBorder(0, 5, 0, 5));
+        infoPanel.setBackground(new Color(27, 71, 120));
 
         JPanel inputPanel = new JPanel();
         inputPanel.setPreferredSize(new Dimension(400, 50));
         inputPanel.setLayout(new BorderLayout());
+        inputPanel.setBorder(new EmptyBorder(0, 5, 0, 5));
+        inputPanel.setBackground(new Color(27, 71, 120));
 
         Image weatherImage = weather.getImage();
         JLabel imageLabel = new JLabel();
         imageLabel.setIcon(new ImageIcon(weatherImage));
 
         JLabel locationLabel = new JLabel(weather.getLocation());
+        locationLabel.setForeground(Color.WHITE);
         JLabel temperatureLabel = new JLabel("Temperature: " + weather.getTemperature() + "°C");
+        temperatureLabel.setForeground(Color.WHITE);
         JLabel humidityLabel = new JLabel("Humidity: " + weather.getHumidity() + "%");
+        humidityLabel.setForeground(Color.WHITE);
 
         JTextField locationField = new JTextField();
         locationField.setPreferredSize(new Dimension(300, 50));
@@ -68,7 +76,12 @@ class WeatherReportApplication {
             }
         });
         JButton searchButton = new JButton("Search");
-        searchButton.setPreferredSize(new Dimension(100, 50));
+        searchButton.setOpaque(true);
+        searchButton.setContentAreaFilled(true);
+        searchButton.setBorderPainted(false);
+        searchButton.setFocusPainted(false);
+        searchButton.setBackground(new Color(28, 141, 162));
+        searchButton.setForeground(Color.WHITE);
         searchButton.addActionListener(e -> searchWeather(weatherJson, locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel));
 
         infoPanel.add(imageLabel);
@@ -76,7 +89,7 @@ class WeatherReportApplication {
         infoPanel.add(temperatureLabel);
         infoPanel.add(humidityLabel);
 
-        inputPanel.add(locationField, BorderLayout.WEST);
+        inputPanel.add(locationField, BorderLayout.CENTER);
         inputPanel.add(searchButton, BorderLayout.EAST);
 
         panel.add(infoPanel);
