@@ -48,12 +48,9 @@ class WeatherReportApplication {
         JLabel imageLabel = new JLabel();
         imageLabel.setIcon(new ImageIcon(weatherImage));
 
-        JLabel locationLabel = new JLabel(weather.getLocation());
-        locationLabel.setForeground(Color.WHITE);
-        JLabel temperatureLabel = new JLabel("Temperature: " + weather.getTemperature() + "°C");
-        temperatureLabel.setForeground(Color.WHITE);
-        JLabel humidityLabel = new JLabel("Humidity: " + weather.getHumidity() + "%");
-        humidityLabel.setForeground(Color.WHITE);
+        JLabel locationLabel = createInfoLabel(weather.getLocation());
+        JLabel temperatureLabel = createInfoLabel("Temperature: " + weather.getTemperature() + "°C");
+        JLabel humidityLabel = createInfoLabel("Humidity: " + weather.getHumidity() + "%");
 
         JTextField locationField = new JTextField();
         locationField.setPreferredSize(new Dimension(300, 50));
@@ -98,6 +95,13 @@ class WeatherReportApplication {
         frame.add(panel);
 
         frame.setVisible(true);
+    }
+
+    private static JLabel createInfoLabel(final String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(Color.WHITE);
+
+        return label;
     }
 
     private static void searchWeather(final WeatherJson weatherJson, final JTextField locationField, final JLabel imageLabel, final JLabel locationLabel, final JLabel temperatureLabel, final JLabel humidityLabel) {
