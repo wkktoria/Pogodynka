@@ -1,4 +1,4 @@
-# Weather Report
+# Pogodynka
 
 ![Demo of application](demo.gif)
 
@@ -21,11 +21,11 @@ set WEATHER_API_KEY="YOUR_API_KEY"
 2. Create JAR.
 
 ```shell
-./mvnw package
+./mvnw clean package
 ```
 
 3. Run JAR.
 
 ```shell
-java -jar ./target/weatherreport-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar ./target/pogodynka-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
