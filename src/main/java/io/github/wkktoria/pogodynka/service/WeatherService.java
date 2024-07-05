@@ -60,6 +60,8 @@ public class WeatherService {
 
         WeatherApiResponse apiResponse = gson.fromJson(responseBody, WeatherApiResponse.class);
 
-        return new Weather(apiResponse.getName(), apiResponse.getMain().getFeelsLike(), apiResponse.getMain().getHumidity(), getWeatherImageSource(apiResponse.getWeather().getFirst().getIcon()));
+        return new Weather(apiResponse.getName(), apiResponse.getMain().getFeelsLike(),
+                apiResponse.getMain().getHumidity(), getWeatherImageSource(apiResponse.getWeather().getFirst().getIcon()),
+                apiResponse.getWind().getSpeed(), apiResponse.getMain().getPressure());
     }
 }

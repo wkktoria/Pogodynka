@@ -40,6 +40,8 @@ public class ReportService {
             document.add(new Paragraph("Location: " + weather.getLocation()));
             document.add(new Paragraph("Temperature: " + weather.getTemperature() + "°C"));
             document.add(new Paragraph("Humidity: " + weather.getHumidity() + "%"));
+            document.add(new Paragraph("Wind speed: " + weather.getWindSpeed() + " m/s"));
+            document.add(new Paragraph("Pressure: " + weather.getPressure() + " hPa"));
         } catch (IOException e) {
             LOGGER.error("Unable to generate report", e);
         }

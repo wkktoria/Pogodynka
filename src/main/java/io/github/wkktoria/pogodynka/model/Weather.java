@@ -5,12 +5,17 @@ public class Weather {
     private final Double temperature;
     private final Integer humidity;
     private final String imageSource;
+    private final Double windSpeed;
+    private final Integer pressure;
 
-    public Weather(final String location, final Double temperature, final Integer humidity, final String imageSource) {
+    public Weather(final String location, final Double temperature, final Integer humidity, final String imageSource,
+                   final Double windSpeed, final Integer pressure) {
         this.location = location;
         this.temperature = temperature;
         this.humidity = humidity;
         this.imageSource = imageSource;
+        this.windSpeed = windSpeed;
+        this.pressure = pressure;
     }
 
     public String getLocation() {
@@ -27,5 +32,13 @@ public class Weather {
 
     public String getImageSource() {
         return imageSource;
+    }
+
+    public Double getWindSpeed() {
+        return windSpeed;
+    }
+
+    public Integer getPressure() {
+        return pressure;
     }
 }

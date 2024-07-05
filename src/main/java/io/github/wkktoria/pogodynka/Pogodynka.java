@@ -28,7 +28,7 @@ class Pogodynka {
         FlatDarkLaf.setup();
 
         JFrame frame = new JFrame("Pogodynka");
-        frame.setSize(new Dimension(480, 480));
+        frame.setSize(new Dimension(360, 280));
         frame.setLayout(new FlowLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -54,11 +54,17 @@ class Pogodynka {
         temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         JLabel humidityLabel = new JLabel("Humidity: " + weatherController.getWeather(DEFAULT_LOCATION).getHumidity() + "%");
         humidityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel windSpeedLabel = new JLabel("Wind speed: " + weatherController.getWeather(DEFAULT_LOCATION).getWindSpeed() + " m/s");
+        windSpeedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel pressureLabel = new JLabel("Pressure: " + weatherController.getWeather(DEFAULT_LOCATION).getPressure() + " hPa");
+        pressureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         infoPanel.add(locationPanel);
         infoPanel.add(temperatureLabel);
         infoPanel.add(temperatureLabel);
         infoPanel.add(humidityLabel);
+        infoPanel.add(windSpeedLabel);
+        infoPanel.add(pressureLabel);
 
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new FlowLayout());
@@ -75,7 +81,8 @@ class Pogodynka {
             @Override
             public void keyPressed(final KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    searchWeather(locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel);
+                    searchWeather(locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel,
+                            windSpeedLabel, pressureLabel);
                 }
             }
 
@@ -85,7 +92,8 @@ class Pogodynka {
             }
         });
         JButton searchButton = new JButton("Search");
-        searchButton.addActionListener(e -> searchWeather(locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel));
+        searchButton.addActionListener(e -> searchWeather(locationField, imageLabel, locationLabel, temperatureLabel,
+                humidityLabel, windSpeedLabel, pressureLabel));
 
         inputPanel.add(locationField);
         inputPanel.add(searchButton);
@@ -112,7 +120,8 @@ class Pogodynka {
         }
     }
 
-    private static void searchWeather(JTextField locationField, JLabel imageLabel, JLabel locationLabel, JLabel temperatureLabel, JLabel humidityLabel) {
+    private static void searchWeather(JTextField locationField, JLabel imageLabel, JLabel locationLabel,
+                                      JLabel temperatureLabel, JLabel humidityLabel, JLabel windSpeedLabel, JLabel pressureLabel) {
         String location = locationField.getText();
 
         if (location.isEmpty()) {
@@ -130,6 +139,8 @@ class Pogodynka {
         temperatureLabel.setText("Temperature: " + weather.getTemperature() + "°C");
         humidityLabel.setText("Humidity: " + weather.getHumidity() + "%");
         setImageLabel(imageLabel, weather.getLocation());
+        windSpeedLabel.setText("Wind speed: " + weather.getWindSpeed() + " m/s");
+        pressureLabel.setText("Pressure: " + weather.getPressure() + " hPa");
         locationField.setText("");
     }
 
