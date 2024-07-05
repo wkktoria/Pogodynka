@@ -1,5 +1,6 @@
 package io.github.wkktoria.pogodynka;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.WeatherService;
@@ -16,6 +17,8 @@ class Pogodynka {
     private static final String DEFAULT_LOCATION = "Warsaw";
 
     public static void main(String[] args) {
+        FlatLightLaf.setup();
+
         JFrame frame = new JFrame("Pogodynka");
         frame.setSize(new Dimension(400, 250));
         frame.setResizable(false);
