@@ -9,12 +9,7 @@ import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class WeatherService {
     private final static Logger LOGGER = LoggerFactory.getLogger(WeatherService.class);
@@ -29,10 +24,11 @@ public class WeatherService {
     }
 
     public Weather getWeather(final String location) {
-        String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey);
+        final String weatherApiUrl = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s";
+        final String url = String.format(weatherApiUrl, location, apiKey);
 
         try {
-            String responseBody = getResponseBody(url);
+            final String responseBody = getResponseBody(url);
             return convertResponseBody(responseBody);
         } catch (IOException e) {
             LOGGER.error("Unable to get weather from API", e);
@@ -41,24 +37,7 @@ public class WeatherService {
         return null;
     }
 
-    public String getWeatherImageUrl(final String location) {
-        String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey);
-
-        try {
-            Gson gson = new Gson();
-
-            String responseBody = getResponseBody(url);
-            WeatherApiResponse apiResponse = gson.fromJson(responseBody, WeatherApiResponse.class);
-
-            return String.format("https://openweathermap.org/img/wn/%s.png", apiResponse.getWeather().getFirst().getIcon());
-        } catch (IOException e) {
-            LOGGER.error("Unable to get weather from API", e);
-        }
-
-        return null;
-    }
-
-    protected String getResponseBody(final String url) throws IOException {
+    private String getResponseBody(final String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -66,28 +45,21 @@ public class WeatherService {
         }
     }
 
-    private ImageIcon getWeatherImage(final String code) {
-        String imageUrl = String.format("https://openweathermap.org/img/wn/%s.png", code);
-
-        try {
-            Image image = ImageIO.read(new URI(imageUrl).toURL());
-            return new ImageIcon(image);
-        } catch (IOException | URISyntaxException e) {
-            LOGGER.error("Unable to get image from API", e);
-        }
-
-        return null;
+    private String getWeatherImageSource(final String code) {
+        final String weatherImageUrl = "https://openweathermap.org/img/wn/%s.png";
+        return String.format(weatherImageUrl, code);
     }
 
     private Weather convertResponseBody(final String responseBody) throws IOException {
         Gson gson = new Gson();
 
-        if (responseBody != null && responseBody.contains("404")) {
+        final String locationNotFoundMessage = "city not found";
+        if (responseBody != null && responseBody.contains(locationNotFoundMessage)) {
             return null;
         }
 
         WeatherApiResponse apiResponse = gson.fromJson(responseBody, WeatherApiResponse.class);
 
-        return new Weather(apiResponse.getName(), apiResponse.getMain().getFeelsLike(), apiResponse.getMain().getHumidity(), getWeatherImage(apiResponse.getWeather().getFirst().getIcon()));
+        return new Weather(apiResponse.getName(), apiResponse.getMain().getFeelsLike(), apiResponse.getMain().getHumidity(), getWeatherImageSource(apiResponse.getWeather().getFirst().getIcon()));
     }
 }

@@ -1,32 +1,29 @@
 package io.github.wkktoria.pogodynka;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.lowagie.text.Document;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Image;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfName;
-import com.lowagie.text.pdf.PdfString;
-import com.lowagie.text.pdf.PdfWriter;
+import io.github.wkktoria.pogodynka.controller.ReportController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.model.Weather;
+import io.github.wkktoria.pogodynka.service.ReportService;
 import io.github.wkktoria.pogodynka.service.WeatherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 class Pogodynka {
-    private static final WeatherService weatherService = new WeatherService();
-    private static final WeatherController weatherController = new WeatherController(weatherService);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Pogodynka.class);
     private static final String DEFAULT_LOCATION = "Warsaw";
+    private static final WeatherController weatherController = new WeatherController(new WeatherService());
+    private static final ReportController reportController = new ReportController(new ReportService(weatherController));
 
     public static void main(String[] args) {
         FlatLightLaf.setup();
@@ -54,7 +51,7 @@ class Pogodynka {
         inputPanel.setBackground(new Color(27, 71, 120));
 
         JLabel imageLabel = new JLabel();
-        imageLabel.setIcon(weatherController.getWeather(DEFAULT_LOCATION).getImage());
+        setImageLabel(imageLabel, DEFAULT_LOCATION);
 
         JLabel locationLabel = createInfoLabel(weatherController.getWeather(DEFAULT_LOCATION).getLocation());
         JLabel temperatureLabel = createInfoLabel("Temperature: " + weatherController.getWeather(DEFAULT_LOCATION).getTemperature() + "°C");
@@ -109,6 +106,15 @@ class Pogodynka {
         frame.setVisible(true);
     }
 
+    private static void setImageLabel(JLabel imageLabel, final String location) {
+        try {
+            Image image = ImageIO.read(new URI(weatherController.getWeather(location).getImageSource()).toURL());
+            imageLabel.setIcon(new ImageIcon(image));
+        } catch (IOException | URISyntaxException e) {
+            LOGGER.error("Couldn't load image", e);
+        }
+    }
+
     private static JLabel createInfoLabel(final String text) {
         JLabel label = new JLabel(text);
         label.setForeground(Color.WHITE);
@@ -116,7 +122,7 @@ class Pogodynka {
         return label;
     }
 
-    private static void searchWeather(final JTextField locationField, final JLabel imageLabel, final JLabel locationLabel, final JLabel temperatureLabel, final JLabel humidityLabel) {
+    private static void searchWeather(JTextField locationField, JLabel imageLabel, JLabel locationLabel, JLabel temperatureLabel, JLabel humidityLabel) {
         String location = locationField.getText();
 
         if (location.isEmpty()) {
@@ -126,15 +132,14 @@ class Pogodynka {
         Weather weather = weatherController.getWeather(location);
 
         if (weather == null) {
-            JOptionPane.showMessageDialog(null, "Could not find weather for '" + location + "'.", "Invalid location", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Couldn't find weather for '" + location + "'.", "Invalid location", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         locationLabel.setText(weather.getLocation());
         temperatureLabel.setText("Temperature: " + weather.getTemperature() + "°C");
         humidityLabel.setText("Humidity: " + weather.getHumidity() + "%");
-        imageLabel.setIcon(weather.getImage());
-
+        setImageLabel(imageLabel, weather.getLocation());
         locationField.setText("");
     }
 
@@ -145,22 +150,11 @@ class Pogodynka {
             return;
         }
 
-        Weather weather = weatherController.getWeather(location);
-
-        try (Document document = new Document()) {
-            final File targetFile = new File(String.format("%s-%s-report.pdf", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), weather.getLocation()));
-            final PdfWriter instance = PdfWriter.getInstance(document, new FileOutputStream(targetFile));
-
-            document.open();
-            instance.getInfo().put(PdfName.CREATOR, new PdfString(Document.getVersion()));
-            document.add(new Paragraph("Weather Report", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
-            Image weatherIcon = Image.getInstance(weatherController.getWeatherImageUrl(weather.getLocation()));
-            document.add(weatherIcon);
-            document.add(new Paragraph("Location: " + weather.getLocation()));
-            document.add(new Paragraph("Temperature: " + weather.getTemperature() + "°C"));
-            document.add(new Paragraph("Humidity: " + weather.getHumidity() + "%"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        try {
+            reportController.generate(location);
+            JOptionPane.showMessageDialog(null, "Report was successfully generated.", "Report generated", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't generate report", e);
         }
     }
 }

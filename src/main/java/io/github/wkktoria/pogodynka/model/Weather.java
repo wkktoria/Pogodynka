@@ -1,18 +1,16 @@
 package io.github.wkktoria.pogodynka.model;
 
-import javax.swing.*;
-
 public class Weather {
     private final String location;
     private final Double temperature;
     private final Integer humidity;
-    private final ImageIcon image;
+    private final String imageSource;
 
-    public Weather(final String location, final Double temperature, final Integer humidity, final ImageIcon image) {
+    public Weather(final String location, final Double temperature, final Integer humidity, final String imageSource) {
         this.location = location;
         this.temperature = temperature;
         this.humidity = humidity;
-        this.image = image;
+        this.imageSource = imageSource;
     }
 
     public String getLocation() {
@@ -27,7 +25,7 @@ public class Weather {
         return humidity;
     }
 
-    public ImageIcon getImage() {
-        return image;
+    public String getImageSource() {
+        return imageSource;
     }
 }
