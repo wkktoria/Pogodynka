@@ -1,6 +1,6 @@
 package io.github.wkktoria.pogodynka;
 
-import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 import io.github.wkktoria.pogodynka.controller.ReportController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.model.Weather;
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -26,39 +25,47 @@ class Pogodynka {
     private static final ReportController reportController = new ReportController(new ReportService(weatherController));
 
     public static void main(String[] args) {
-        FlatLightLaf.setup();
+        FlatDarkLaf.setup();
 
         JFrame frame = new JFrame("Pogodynka");
         frame.setSize(new Dimension(480, 480));
-        frame.setResizable(false);
+        frame.setLayout(new FlowLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.setBackground(new Color(27, 71, 120));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JPanel infoPanel = new JPanel();
-        infoPanel.setPreferredSize(new Dimension(400, 150));
-        infoPanel.setLayout(new GridLayout(2, 2));
-        infoPanel.setBorder(new EmptyBorder(0, 5, 0, 5));
-        infoPanel.setBackground(new Color(27, 71, 120));
-
-        JPanel inputPanel = new JPanel();
-        inputPanel.setPreferredSize(new Dimension(400, 50));
-        inputPanel.setLayout(new BorderLayout());
-        inputPanel.setBorder(new EmptyBorder(0, 5, 0, 5));
-        inputPanel.setBackground(new Color(27, 71, 120));
+        JPanel locationPanel = new JPanel();
 
         JLabel imageLabel = new JLabel();
         setImageLabel(imageLabel, DEFAULT_LOCATION);
+        JLabel locationLabel = new JLabel(DEFAULT_LOCATION);
 
-        JLabel locationLabel = createInfoLabel(weatherController.getWeather(DEFAULT_LOCATION).getLocation());
-        JLabel temperatureLabel = createInfoLabel("Temperature: " + weatherController.getWeather(DEFAULT_LOCATION).getTemperature() + "°C");
-        JLabel humidityLabel = createInfoLabel("Humidity: " + weatherController.getWeather(DEFAULT_LOCATION).getHumidity() + "%");
+        locationPanel.add(imageLabel);
+        locationPanel.add(locationLabel);
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel temperatureLabel = new JLabel("Temperature: " + weatherController.getWeather(DEFAULT_LOCATION).getTemperature() + "°C");
+        temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel humidityLabel = new JLabel("Humidity: " + weatherController.getWeather(DEFAULT_LOCATION).getHumidity() + "%");
+        humidityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        infoPanel.add(locationPanel);
+        infoPanel.add(temperatureLabel);
+        infoPanel.add(temperatureLabel);
+        infoPanel.add(humidityLabel);
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+        inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JTextField locationField = new JTextField();
-        locationField.setPreferredSize(new Dimension(300, 50));
+        locationField.setColumns(15);
         locationField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(final KeyEvent e) {
@@ -78,24 +85,14 @@ class Pogodynka {
             }
         });
         JButton searchButton = new JButton("Search");
-        searchButton.setOpaque(true);
-        searchButton.setContentAreaFilled(true);
-        searchButton.setBorderPainted(false);
-        searchButton.setFocusPainted(false);
-        searchButton.setBackground(new Color(28, 141, 162));
-        searchButton.setForeground(Color.WHITE);
         searchButton.addActionListener(e -> searchWeather(locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel));
 
+        inputPanel.add(locationField);
+        inputPanel.add(searchButton);
+
         JButton generateReportButton = new JButton("Generate Report");
+        generateReportButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         generateReportButton.addActionListener(e -> generateReport(locationLabel));
-
-        infoPanel.add(imageLabel);
-        infoPanel.add(locationLabel);
-        infoPanel.add(temperatureLabel);
-        infoPanel.add(humidityLabel);
-
-        inputPanel.add(locationField, BorderLayout.CENTER);
-        inputPanel.add(searchButton, BorderLayout.EAST);
 
         panel.add(infoPanel);
         panel.add(inputPanel);
@@ -113,13 +110,6 @@ class Pogodynka {
         } catch (IOException | URISyntaxException e) {
             LOGGER.error("Couldn't load image", e);
         }
-    }
-
-    private static JLabel createInfoLabel(final String text) {
-        JLabel label = new JLabel(text);
-        label.setForeground(Color.WHITE);
-
-        return label;
     }
 
     private static void searchWeather(JTextField locationField, JLabel imageLabel, JLabel locationLabel, JLabel temperatureLabel, JLabel humidityLabel) {
