@@ -1,6 +1,13 @@
 package io.github.wkktoria.pogodynka;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import com.lowagie.text.Document;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfString;
+import com.lowagie.text.pdf.PdfWriter;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.WeatherService;
@@ -10,6 +17,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 class Pogodynka {
     private static final WeatherService weatherService = new WeatherService();
@@ -20,7 +32,7 @@ class Pogodynka {
         FlatLightLaf.setup();
 
         JFrame frame = new JFrame("Pogodynka");
-        frame.setSize(new Dimension(400, 250));
+        frame.setSize(new Dimension(480, 480));
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -77,6 +89,9 @@ class Pogodynka {
         searchButton.setForeground(Color.WHITE);
         searchButton.addActionListener(e -> searchWeather(locationField, imageLabel, locationLabel, temperatureLabel, humidityLabel));
 
+        JButton generateReportButton = new JButton("Generate Report");
+        generateReportButton.addActionListener(e -> generateReport(locationLabel));
+
         infoPanel.add(imageLabel);
         infoPanel.add(locationLabel);
         infoPanel.add(temperatureLabel);
@@ -87,6 +102,7 @@ class Pogodynka {
 
         panel.add(infoPanel);
         panel.add(inputPanel);
+        panel.add(generateReportButton);
 
         frame.add(panel);
 
@@ -120,6 +136,32 @@ class Pogodynka {
         imageLabel.setIcon(weather.getImage());
 
         locationField.setText("");
+    }
+
+    private static void generateReport(final JLabel locationLabel) {
+        String location = locationLabel.getText();
+
+        if (location.isEmpty()) {
+            return;
+        }
+
+        Weather weather = weatherController.getWeather(location);
+
+        try (Document document = new Document()) {
+            final File targetFile = new File(String.format("%s-%s-report.pdf", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), weather.getLocation()));
+            final PdfWriter instance = PdfWriter.getInstance(document, new FileOutputStream(targetFile));
+
+            document.open();
+            instance.getInfo().put(PdfName.CREATOR, new PdfString(Document.getVersion()));
+            document.add(new Paragraph("Weather Report", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+            Image weatherIcon = Image.getInstance(weatherController.getWeatherImageUrl(weather.getLocation()));
+            document.add(weatherIcon);
+            document.add(new Paragraph("Location: " + weather.getLocation()));
+            document.add(new Paragraph("Temperature: " + weather.getTemperature() + "°C"));
+            document.add(new Paragraph("Humidity: " + weather.getHumidity() + "%"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

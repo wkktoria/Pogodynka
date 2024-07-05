@@ -18,6 +18,7 @@
         <okhttp.version>4.12.0</okhttp.version>
         <gson.version>2.11.0</gson.version>
         <flatlaf.version>3.4.1</flatlaf.version>
+        <openpdf.version>2.0.2</openpdf.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,6 +59,12 @@
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>
             <scope>implementation</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>${openpdf.version}</version>
         </dependency>
     </dependencies>
 

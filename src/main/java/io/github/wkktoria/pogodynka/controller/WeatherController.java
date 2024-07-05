@@ -14,4 +14,7 @@ public class WeatherController {
         return weatherService.getWeather(location);
     }
 
+    public String getWeatherImageUrl(final String location) {
+        return weatherService.getWeatherImageUrl(location);
+    }
 }

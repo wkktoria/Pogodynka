@@ -41,6 +41,23 @@ public class WeatherService {
         return null;
     }
 
+    public String getWeatherImageUrl(final String location) {
+        String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", location, apiKey);
+
+        try {
+            Gson gson = new Gson();
+
+            String responseBody = getResponseBody(url);
+            WeatherApiResponse apiResponse = gson.fromJson(responseBody, WeatherApiResponse.class);
+
+            return String.format("https://openweathermap.org/img/wn/%s.png", apiResponse.getWeather().getFirst().getIcon());
+        } catch (IOException e) {
+            LOGGER.error("Unable to get weather from API", e);
+        }
+
+        return null;
+    }
+
     protected String getResponseBody(final String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
 
