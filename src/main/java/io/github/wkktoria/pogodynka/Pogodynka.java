@@ -3,6 +3,7 @@ package io.github.wkktoria.pogodynka;
 import com.formdev.flatlaf.FlatDarkLaf;
 import io.github.wkktoria.pogodynka.controller.ReportController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
+import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
 import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.ReportService;
 import io.github.wkktoria.pogodynka.service.WeatherService;
@@ -21,8 +22,18 @@ import java.net.URISyntaxException;
 class Pogodynka {
     private static final Logger LOGGER = LoggerFactory.getLogger(Pogodynka.class);
     private static final String DEFAULT_LOCATION = "Warsaw";
-    private static final WeatherController weatherController = new WeatherController(new WeatherService());
-    private static final ReportController reportController = new ReportController(new ReportService(weatherController));
+    private static final WeatherController weatherController;
+    private static final ReportController reportController;
+
+    static {
+        try {
+            weatherController = new WeatherController(new WeatherService());
+            reportController = new ReportController(new ReportService(weatherController));
+        } catch (MissingApiKeyException e) {
+            LOGGER.error(e.getLocalizedMessage());
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) {
         FlatDarkLaf.setup();

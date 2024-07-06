@@ -2,6 +2,9 @@ package io.github.wkktoria.pogodynka.service;
 
 import com.google.gson.Gson;
 import io.github.wkktoria.pogodynka.api.WeatherApiResponse;
+import io.github.wkktoria.pogodynka.exception.ApiProblemException;
+import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
+import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
 import io.github.wkktoria.pogodynka.model.Weather;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,14 +19,13 @@ public class WeatherService {
     private final String apiKey = System.getenv("WEATHER_API_KEY");
     private final OkHttpClient client = new OkHttpClient();
 
-    public WeatherService() {
+    public WeatherService() throws MissingApiKeyException {
         if (apiKey == null || apiKey.isEmpty()) {
-            LOGGER.error("Weather API key is missing");
-            throw new RuntimeException("Weather API key is missing");
+            throw new MissingApiKeyException("Weather API key is missing");
         }
     }
 
-    public Weather getWeather(final String location) {
+    public Weather getWeather(final String location) throws ApiProblemException {
         final String weatherApiUrl = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s";
         final String url = String.format(weatherApiUrl, location, apiKey);
 
@@ -31,10 +33,11 @@ public class WeatherService {
             final String responseBody = getResponseBody(url);
             return convertResponseBody(responseBody);
         } catch (IOException e) {
-            LOGGER.error("Unable to get weather from API", e);
+            throw new ApiProblemException("Unable to get weather data from API");
+        } catch (InvalidLocationException e) {
+            LOGGER.error("Unable to get weather data for location: {}", location);
+            return null;
         }
-
-        return null;
     }
 
     private String getResponseBody(final String url) throws IOException {
@@ -50,12 +53,12 @@ public class WeatherService {
         return String.format(weatherImageUrl, code);
     }
 
-    private Weather convertResponseBody(final String responseBody) throws IOException {
+    private Weather convertResponseBody(final String responseBody) throws InvalidLocationException {
         Gson gson = new Gson();
 
         final String locationNotFoundMessage = "city not found";
         if (responseBody != null && responseBody.contains(locationNotFoundMessage)) {
-            return null;
+            throw new InvalidLocationException("Unable to find weather data for given location");
         }
 
         WeatherApiResponse apiResponse = gson.fromJson(responseBody, WeatherApiResponse.class);
