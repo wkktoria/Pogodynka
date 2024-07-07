@@ -1,6 +1,7 @@
 package io.github.wkktoria.pogodynka.controller;
 
 import io.github.wkktoria.pogodynka.exception.ApiProblemException;
+import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
 import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.WeatherService;
 import org.slf4j.Logger;
@@ -17,13 +18,18 @@ public class WeatherController {
     public Weather getWeather(final String location) {
         try {
             return weatherService.getWeather(location);
-        } catch (ApiProblemException e) {
-            LOGGER.error("Cannot get weather data for location: {}", location);
+        } catch (ApiProblemException | InvalidLocationException e) {
+            LOGGER.error(e.getLocalizedMessage());
             return null;
         }
     }
 
     public boolean isValidLocation(final String location) {
-        return weatherService.isValidLocation(location);
+        try {
+            return weatherService.isValidLocation(location);
+        } catch (ApiProblemException e) {
+            LOGGER.error(e.getLocalizedMessage());
+            return false;
+        }
     }
 }

@@ -9,26 +9,23 @@ import io.github.wkktoria.pogodynka.model.Weather;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class WeatherService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(WeatherService.class);
     private final static String INVALID_LOCATION_MESSAGE = "city not found";
     private final static String WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s";
-    private final String apiKey = System.getenv("WEATHER_API_KEY");
+    private final static String API_KEY = System.getenv("WEATHER_API_KEY");
     private final OkHttpClient client = new OkHttpClient();
 
     public WeatherService() throws MissingApiKeyException {
-        if (apiKey == null || apiKey.isEmpty()) {
+        if (API_KEY == null || API_KEY.isEmpty()) {
             throw new MissingApiKeyException("Weather API key is missing");
         }
     }
 
-    public Weather getWeather(final String location) throws ApiProblemException {
-        final String url = String.format(WEATHER_API_URL, location, apiKey);
+    public Weather getWeather(final String location) throws ApiProblemException, InvalidLocationException {
+        final String url = String.format(WEATHER_API_URL, location, API_KEY);
 
         try {
             final String responseBody = getResponseBody(url);
@@ -36,20 +33,18 @@ public class WeatherService {
         } catch (IOException e) {
             throw new ApiProblemException("Unable to get weather data from API");
         } catch (InvalidLocationException e) {
-            LOGGER.error("Unable to get weather data for location: {}", location);
-            return null;
+            throw new InvalidLocationException("Unable to get weather data for location: " + location);
         }
     }
 
-    public boolean isValidLocation(final String location) {
-        final String url = String.format(WEATHER_API_URL, location, apiKey);
+    public boolean isValidLocation(final String location) throws ApiProblemException {
+        final String url = String.format(WEATHER_API_URL, location, API_KEY);
 
         try {
             final String responseBody = getResponseBody(url);
             return responseBody != null && !responseBody.contains(INVALID_LOCATION_MESSAGE);
         } catch (IOException e) {
-            LOGGER.error("Unable to get weather data from API");
-            return false;
+            throw new ApiProblemException("Unable to get weather data from API");
         }
     }
 
