@@ -66,6 +66,12 @@
             <artifactId>openpdf</artifactId>
             <version>${openpdf.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.12.0</version>
+        </dependency>
     </dependencies>
 
     <build>

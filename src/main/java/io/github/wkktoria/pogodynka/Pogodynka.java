@@ -1,12 +1,15 @@
 package io.github.wkktoria.pogodynka;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import io.github.wkktoria.pogodynka.controller.LocationPreferencesController;
 import io.github.wkktoria.pogodynka.controller.ReportController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
 import io.github.wkktoria.pogodynka.model.Weather;
+import io.github.wkktoria.pogodynka.service.LocationPreferencesService;
 import io.github.wkktoria.pogodynka.service.ReportService;
 import io.github.wkktoria.pogodynka.service.WeatherService;
+import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +24,15 @@ import java.net.URISyntaxException;
 
 class Pogodynka {
     private static final Logger LOGGER = LoggerFactory.getLogger(Pogodynka.class);
-    private static final String DEFAULT_LOCATION = "Warsaw";
     private static final WeatherController weatherController;
     private static final ReportController reportController;
+    private static final LocationPreferencesController locationPreferencesController;
 
     static {
         try {
             weatherController = new WeatherController(new WeatherService());
             reportController = new ReportController(new ReportService(weatherController));
+            locationPreferencesController = new LocationPreferencesController(new LocationPreferencesService(weatherController));
         } catch (MissingApiKeyException e) {
             LOGGER.error(e.getLocalizedMessage());
             throw new RuntimeException(e);
@@ -48,11 +52,20 @@ class Pogodynka {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.setRollover(true);
+
+        JButton configDefaultLocationButton = new JButton("Configure default location");
+        configDefaultLocationButton.addActionListener(e -> configureDefaultLocation());
+
+        toolBar.add(configDefaultLocationButton);
+
         JPanel locationPanel = new JPanel();
 
         JLabel imageLabel = new JLabel();
-        setImageLabel(imageLabel, DEFAULT_LOCATION);
-        JLabel locationLabel = new JLabel(DEFAULT_LOCATION);
+        setImageLabel(imageLabel, locationPreferencesController.getLocation());
+        JLabel locationLabel = new JLabel(locationPreferencesController.getLocation());
 
         locationPanel.add(imageLabel);
         locationPanel.add(locationLabel);
@@ -61,13 +74,13 @@ class Pogodynka {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel temperatureLabel = new JLabel("Temperature: " + weatherController.getWeather(DEFAULT_LOCATION).getTemperature() + "°C");
+        JLabel temperatureLabel = new JLabel("Temperature: " + weatherController.getWeather(locationPreferencesController.getLocation()).getTemperature() + "°C");
         temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel humidityLabel = new JLabel("Humidity: " + weatherController.getWeather(DEFAULT_LOCATION).getHumidity() + "%");
+        JLabel humidityLabel = new JLabel("Humidity: " + weatherController.getWeather(locationPreferencesController.getLocation()).getHumidity() + "%");
         humidityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel windSpeedLabel = new JLabel("Wind speed: " + weatherController.getWeather(DEFAULT_LOCATION).getWindSpeed() + " m/s");
+        JLabel windSpeedLabel = new JLabel("Wind speed: " + weatherController.getWeather(locationPreferencesController.getLocation()).getWindSpeed() + " m/s");
         windSpeedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel pressureLabel = new JLabel("Pressure: " + weatherController.getWeather(DEFAULT_LOCATION).getPressure() + " hPa");
+        JLabel pressureLabel = new JLabel("Pressure: " + weatherController.getWeather(locationPreferencesController.getLocation()).getPressure() + " hPa");
         pressureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         infoPanel.add(locationPanel);
@@ -113,6 +126,7 @@ class Pogodynka {
         generateReportButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         generateReportButton.addActionListener(e -> generateReport(locationLabel));
 
+        panel.add(toolBar);
         panel.add(infoPanel);
         panel.add(inputPanel);
         panel.add(generateReportButton);
@@ -167,6 +181,20 @@ class Pogodynka {
             JOptionPane.showMessageDialog(null, "Report was successfully generated.", "Report generated", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             LOGGER.error("Couldn't generate report", e);
+        }
+    }
+
+    private static void configureDefaultLocation() {
+        String location = JOptionPane.showInputDialog(null, "Default location:", "Configure default location", JOptionPane.QUESTION_MESSAGE);
+
+        if (location != null) {
+            WordUtils.capitalizeFully(location);
+        }
+
+        if (location != null && locationPreferencesController.setLocation(location)) {
+            JOptionPane.showMessageDialog(null, "Default location set successfully to " + location + ".", "Default location configured", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Couldn't set default location to " + location + ".", "Invalid location", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

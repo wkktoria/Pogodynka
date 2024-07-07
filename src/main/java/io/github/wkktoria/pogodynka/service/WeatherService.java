@@ -16,6 +16,8 @@ import java.io.IOException;
 
 public class WeatherService {
     private final static Logger LOGGER = LoggerFactory.getLogger(WeatherService.class);
+    private final static String INVALID_LOCATION_MESSAGE = "city not found";
+    private final static String WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s";
     private final String apiKey = System.getenv("WEATHER_API_KEY");
     private final OkHttpClient client = new OkHttpClient();
 
@@ -26,8 +28,7 @@ public class WeatherService {
     }
 
     public Weather getWeather(final String location) throws ApiProblemException {
-        final String weatherApiUrl = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s";
-        final String url = String.format(weatherApiUrl, location, apiKey);
+        final String url = String.format(WEATHER_API_URL, location, apiKey);
 
         try {
             final String responseBody = getResponseBody(url);
@@ -37,6 +38,18 @@ public class WeatherService {
         } catch (InvalidLocationException e) {
             LOGGER.error("Unable to get weather data for location: {}", location);
             return null;
+        }
+    }
+
+    public boolean isValidLocation(final String location) {
+        final String url = String.format(WEATHER_API_URL, location, apiKey);
+
+        try {
+            final String responseBody = getResponseBody(url);
+            return responseBody != null && !responseBody.contains(INVALID_LOCATION_MESSAGE);
+        } catch (IOException e) {
+            LOGGER.error("Unable to get weather data from API");
+            return false;
         }
     }
 
@@ -56,8 +69,7 @@ public class WeatherService {
     private Weather convertResponseBody(final String responseBody) throws InvalidLocationException {
         Gson gson = new Gson();
 
-        final String locationNotFoundMessage = "city not found";
-        if (responseBody != null && responseBody.contains(locationNotFoundMessage)) {
+        if (responseBody != null && responseBody.contains(INVALID_LOCATION_MESSAGE)) {
             throw new InvalidLocationException("Unable to find weather data for given location");
         }
 

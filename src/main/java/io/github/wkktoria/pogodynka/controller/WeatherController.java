@@ -22,4 +22,8 @@ public class WeatherController {
             return null;
         }
     }
+
+    public boolean isValidLocation(final String location) {
+        return weatherService.isValidLocation(location);
+    }
 }
