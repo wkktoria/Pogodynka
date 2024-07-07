@@ -7,9 +7,9 @@ import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfWriter;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
+import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
+import io.github.wkktoria.pogodynka.exception.ReportGenerationProblemException;
 import io.github.wkktoria.pogodynka.model.Weather;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,14 +18,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ReportService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
     private final WeatherController weatherController;
 
     public ReportService(final WeatherController weatherController) {
         this.weatherController = weatherController;
     }
 
-    public void generate(final String location) {
+    public void generate(final String location) throws ReportGenerationProblemException, InvalidLocationException {
+        if (!weatherController.isValidLocation(location)) {
+            throw new InvalidLocationException();
+        }
+
         Weather weather = weatherController.getWeather(location);
 
         try (Document document = new Document()) {
@@ -43,7 +46,7 @@ public class ReportService {
             document.add(new Paragraph("Wind speed: " + weather.getWindSpeed() + " m/s"));
             document.add(new Paragraph("Pressure: " + weather.getPressure() + " hPa"));
         } catch (IOException e) {
-            LOGGER.error("Unable to generate report", e);
+            throw new ReportGenerationProblemException();
         }
     }
 }

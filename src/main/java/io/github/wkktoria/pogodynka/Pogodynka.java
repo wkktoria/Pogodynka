@@ -176,11 +176,10 @@ class Pogodynka {
             return;
         }
 
-        try {
-            reportController.generate(location);
+        if (reportController.generate(location)) {
             JOptionPane.showMessageDialog(null, "Report was successfully generated.", "Report generated", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            LOGGER.error("Couldn't generate report", e);
+        } else {
+            JOptionPane.showMessageDialog(null, "Couldn't generate report.", "Generation failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 
