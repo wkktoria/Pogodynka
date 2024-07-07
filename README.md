@@ -1,6 +1,6 @@
 # Pogodynka
 
-![Demo of application](demo.gif)
+![Demo of application](demo.png)
 
 ## Run Application
 
