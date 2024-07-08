@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import io.github.wkktoria.pogodynka.controller.LocationPreferencesController;
 import io.github.wkktoria.pogodynka.controller.ReportController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
+import io.github.wkktoria.pogodynka.exception.ApiProblemException;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
 import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.LocationPreferencesService;
@@ -27,13 +28,19 @@ class Pogodynka {
     private static final WeatherController weatherController;
     private static final ReportController reportController;
     private static final LocationPreferencesController locationPreferencesController;
+    private static final Weather defaultWeather;
 
     static {
         try {
             weatherController = new WeatherController(new WeatherService());
             reportController = new ReportController(new ReportService(weatherController));
             locationPreferencesController = new LocationPreferencesController(new LocationPreferencesService(weatherController));
-        } catch (MissingApiKeyException e) {
+            defaultWeather = weatherController.getWeather(locationPreferencesController.getLocation());
+
+            if (defaultWeather == null) {
+                throw new ApiProblemException("Couldn't get weather information");
+            }
+        } catch (MissingApiKeyException | ApiProblemException e) {
             LOGGER.error(e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
@@ -74,13 +81,13 @@ class Pogodynka {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel temperatureLabel = new JLabel("Temperature: " + weatherController.getWeather(locationPreferencesController.getLocation()).getTemperature() + "°C");
+        JLabel temperatureLabel = new JLabel("Temperature: " + defaultWeather.getTemperature() + "°C");
         temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel humidityLabel = new JLabel("Humidity: " + weatherController.getWeather(locationPreferencesController.getLocation()).getHumidity() + "%");
+        JLabel humidityLabel = new JLabel("Humidity: " + defaultWeather.getHumidity() + "%");
         humidityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel windSpeedLabel = new JLabel("Wind speed: " + weatherController.getWeather(locationPreferencesController.getLocation()).getWindSpeed() + " m/s");
+        JLabel windSpeedLabel = new JLabel("Wind speed: " + defaultWeather.getWindSpeed() + " m/s");
         windSpeedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel pressureLabel = new JLabel("Pressure: " + weatherController.getWeather(locationPreferencesController.getLocation()).getPressure() + " hPa");
+        JLabel pressureLabel = new JLabel("Pressure: " + defaultWeather.getPressure() + " hPa");
         pressureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         infoPanel.add(locationPanel);

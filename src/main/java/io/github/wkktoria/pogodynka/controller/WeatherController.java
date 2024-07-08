@@ -1,6 +1,7 @@
 package io.github.wkktoria.pogodynka.controller;
 
 import io.github.wkktoria.pogodynka.exception.ApiProblemException;
+import io.github.wkktoria.pogodynka.exception.InvalidApiKeyException;
 import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
 import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.WeatherService;
@@ -18,7 +19,7 @@ public class WeatherController {
     public Weather getWeather(final String location) {
         try {
             return weatherService.getWeather(location);
-        } catch (ApiProblemException | InvalidLocationException e) {
+        } catch (ApiProblemException | InvalidLocationException | InvalidApiKeyException e) {
             LOGGER.error(e.getLocalizedMessage());
             return null;
         }
