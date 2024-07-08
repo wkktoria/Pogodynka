@@ -17,10 +17,10 @@ Pogodynka uses Maven to handle dependencies and building.
 
 #### Compile
 
-Windows:
+Windows (PowerShell):
 
 ```shell
-set WEATHER_API_KEY="YOUR_API_KEY"
+$env:WEATHER_API_KEY="YOUR_API_KEY"
 ./mvnw clean package
 ```
 
