@@ -13,7 +13,6 @@ Pogodynka uses Maven to handle dependencies and building.
 ### Requirements
 
 - [Java Development Kit 21](https://www.oracle.com/java/technologies/downloads/#jdk21) or higher
-- [Git](https://git-scm.com/downloads)
 - [OpenWeather's](https://openweathermap.org) API key
 
 #### Compile
