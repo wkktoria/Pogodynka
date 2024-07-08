@@ -1,6 +1,7 @@
 package io.github.wkktoria.pogodynka.service;
 
 import io.github.wkktoria.pogodynka.exception.ApiProblemException;
+import io.github.wkktoria.pogodynka.exception.InvalidApiKeyException;
 import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ class WeatherServiceTest {
     private final static String NON_EXISTENT_LOCATION = "NonExistentLocation";
 
     @Test
-    void getWeatherReturnsWeather() throws MissingApiKeyException, ApiProblemException, InvalidLocationException {
+    void getWeatherReturnsWeather() throws MissingApiKeyException, ApiProblemException, InvalidLocationException, InvalidApiKeyException {
         // given
         var weatherService = new WeatherService();
 
