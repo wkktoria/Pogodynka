@@ -71,7 +71,6 @@
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>
-            <scope>implementation</scope>
         </dependency>
 
         <dependency>
