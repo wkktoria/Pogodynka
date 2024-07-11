@@ -234,9 +234,13 @@ class Pogodynka {
                 localeConfig.getResourceBundle().getString("chooseReportFilename"),
                 JOptionPane.QUESTION_MESSAGE);
 
+        if (filename == null || filename.isEmpty()) {
+            return;
+        }
+
         String location = locationLabel.getText();
 
-        if (location.isEmpty() || filename.isEmpty()) {
+        if (location == null || location.isEmpty()) {
             return;
         }
 
