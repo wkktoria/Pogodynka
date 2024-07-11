@@ -83,8 +83,7 @@ class Pogodynka {
 
         changeLanguageButton = new JButton(localeConfig.getResourceBundle().getString("changeLanguage"));
         changeLanguageButton.addActionListener(e -> {
-            Object[] languages = {localeConfig.getResourceBundle().getString("english"),
-                    localeConfig.getResourceBundle().getString("polish"),};
+            Object[] languages = localeConfig.getResourceBundle().getString("availableLanguages").split(",");
 
             int languageIndex = JOptionPane.showOptionDialog(null,
                     localeConfig.getResourceBundle().getString("selectLanguage") + ": ",
