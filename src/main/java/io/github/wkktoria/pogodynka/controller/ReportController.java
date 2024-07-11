@@ -14,9 +14,9 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    public boolean generate(final String location) {
+    public boolean generate(final String filename, final String location) {
         try {
-            reportService.generate(location);
+            reportService.generate(filename, location);
             return true;
         } catch (ReportGenerationProblemException | InvalidLocationException e) {
             LOGGER.error("Cannot generate report");
