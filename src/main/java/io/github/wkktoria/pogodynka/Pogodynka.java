@@ -4,12 +4,14 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import io.github.wkktoria.pogodynka.config.LocaleConfig;
 import io.github.wkktoria.pogodynka.controller.LocationPreferencesController;
 import io.github.wkktoria.pogodynka.controller.ReportController;
+import io.github.wkktoria.pogodynka.controller.ResourceController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.exception.ApiProblemException;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
 import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.LocationPreferencesService;
 import io.github.wkktoria.pogodynka.service.ReportService;
+import io.github.wkktoria.pogodynka.service.ResourceService;
 import io.github.wkktoria.pogodynka.service.WeatherService;
 import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ class Pogodynka {
     private static final ReportController reportController;
     private static final LocationPreferencesController locationPreferencesController;
     private static final LocaleConfig localeConfig;
+    private static final ResourceController resourceController;
 
     private static Weather weather;
 
@@ -47,8 +50,9 @@ class Pogodynka {
     static {
         try {
             localeConfig = new LocaleConfig();
+            resourceController = new ResourceController(new ResourceService(localeConfig));
             weatherController = new WeatherController(new WeatherService());
-            reportController = new ReportController(new ReportService(weatherController, localeConfig));
+            reportController = new ReportController(new ReportService(weatherController, resourceController));
             locationPreferencesController = new LocationPreferencesController(new LocationPreferencesService(weatherController));
             weather = weatherController.getWeather(locationPreferencesController.getLocation());
 
@@ -78,16 +82,16 @@ class Pogodynka {
         toolBar.setFloatable(false);
         toolBar.setRollover(true);
 
-        configureDefaultLocationButton = new JButton(localeConfig.getResourceBundle().getString("configureDefaultLocation"));
+        configureDefaultLocationButton = new JButton("Configure default location");
         configureDefaultLocationButton.addActionListener(e -> configureDefaultLocation());
 
-        changeLanguageButton = new JButton(localeConfig.getResourceBundle().getString("changeLanguage"));
+        changeLanguageButton = new JButton("Change language");
         changeLanguageButton.addActionListener(e -> {
-            Object[] languages = localeConfig.getResourceBundle().getString("availableLanguages").split(",");
+            Object[] languages = resourceController.getByKey("availableLanguages").split(",");
 
             int languageIndex = JOptionPane.showOptionDialog(null,
-                    localeConfig.getResourceBundle().getString("selectLanguage") + ": ",
-                    localeConfig.getResourceBundle().getString("changeLanguage"),
+                    resourceController.getByKey("selectLanguage") + ": ",
+                    resourceController.getByKey("changeLanguage"),
                     JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, languages, languages[0]);
 
             switch (languageIndex) {
@@ -185,15 +189,15 @@ class Pogodynka {
     }
 
     private static void update() {
-        configureDefaultLocationButton.setText(localeConfig.getResourceBundle().getString("configureDefaultLocation"));
-        changeLanguageButton.setText(localeConfig.getResourceBundle().getString("changeLanguage"));
-        searchButton.setText(localeConfig.getResourceBundle().getString("search"));
-        generateReportButton.setText(localeConfig.getResourceBundle().getString("generateReport"));
+        configureDefaultLocationButton.setText(resourceController.getByKey("configureDefaultLocation"));
+        changeLanguageButton.setText(resourceController.getByKey("changeLanguage"));
+        searchButton.setText(resourceController.getByKey("search"));
+        generateReportButton.setText(resourceController.getByKey("generateReport"));
 
-        temperatureLabel.setText(localeConfig.getResourceBundle().getString("temperature") + ": " + weather.getTemperature() + "°C");
-        humidityLabel.setText(localeConfig.getResourceBundle().getString("humidity") + ": " + weather.getHumidity() + "%");
-        windSpeedLabel.setText(localeConfig.getResourceBundle().getString("windSpeed") + ": " + weather.getWindSpeed() + " m/s");
-        pressureLabel.setText(localeConfig.getResourceBundle().getString("pressure") + ": " + weather.getPressure() + " hPa");
+        temperatureLabel.setText(resourceController.getByKey("temperature") + ": " + weather.getTemperature() + "°C");
+        humidityLabel.setText(resourceController.getByKey("humidity") + ": " + weather.getHumidity() + "%");
+        windSpeedLabel.setText(resourceController.getByKey("windSpeed") + ": " + weather.getWindSpeed() + " m/s");
+        pressureLabel.setText(resourceController.getByKey("pressure") + ": " + weather.getPressure() + " hPa");
     }
 
     private static void setImageLabel(JLabel imageLabel, final String location) {
@@ -216,8 +220,8 @@ class Pogodynka {
 
         if (weather == null) {
             JOptionPane.showMessageDialog(null,
-                    localeConfig.getResourceBundle().getString("couldNotFindWeatherInformationFor") + " " + location + ".",
-                    localeConfig.getResourceBundle().getString("invalidLocation"),
+                    resourceController.getByKey("couldNotFindWeatherInformationFor") + " " + location + ".",
+                    resourceController.getByKey("invalidLocation"),
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -230,8 +234,8 @@ class Pogodynka {
 
     private static void generateReport(final JLabel locationLabel) {
         String filename = JOptionPane.showInputDialog(null,
-                localeConfig.getResourceBundle().getString("reportFilename") + ": ",
-                localeConfig.getResourceBundle().getString("chooseReportFilename"),
+                resourceController.getByKey("reportFilename") + ": ",
+                resourceController.getByKey("chooseReportFilename"),
                 JOptionPane.QUESTION_MESSAGE);
 
         if (filename == null || filename.isEmpty()) {
@@ -246,21 +250,21 @@ class Pogodynka {
 
         if (reportController.generate(filename, location)) {
             JOptionPane.showMessageDialog(null,
-                    localeConfig.getResourceBundle().getString("reportWasSuccessfullyGenerated") + ".",
-                    localeConfig.getResourceBundle().getString("reportGenerated"),
+                    resourceController.getByKey("reportWasSuccessfullyGenerated") + ".",
+                    resourceController.getByKey("reportGenerated"),
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null,
-                    localeConfig.getResourceBundle().getString("couldNotGenerateReport") + ".",
-                    localeConfig.getResourceBundle().getString("reportGenerationFailed"),
+                    resourceController.getByKey("couldNotGenerateReport") + ".",
+                    resourceController.getByKey("reportGenerationFailed"),
                     JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private static void configureDefaultLocation() {
         String location = JOptionPane.showInputDialog(null,
-                localeConfig.getResourceBundle().getString("defaultLocation") + ": ",
-                localeConfig.getResourceBundle().getString("configureDefaultLocation"),
+                resourceController.getByKey("defaultLocation") + ": ",
+                resourceController.getByKey("configureDefaultLocation"),
                 JOptionPane.QUESTION_MESSAGE);
 
         if (location != null) {
@@ -269,13 +273,13 @@ class Pogodynka {
 
         if (location != null && locationPreferencesController.setLocation(location)) {
             JOptionPane.showMessageDialog(null,
-                    localeConfig.getResourceBundle().getString("defaultLocationSetSuccessfullyTo") + " " + location + ".",
-                    localeConfig.getResourceBundle().getString("defaultLocationSetUp"),
+                    resourceController.getByKey("defaultLocationSetSuccessfullyTo") + " " + location + ".",
+                    resourceController.getByKey("defaultLocationSetUp"),
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null,
-                    localeConfig.getResourceBundle().getString("couldNotSetDefaultLocationTo") + " " + location + ".",
-                    localeConfig.getResourceBundle().getString("invalidLocation"),
+                    resourceController.getByKey("couldNotSetDefaultLocationTo") + " " + location + ".",
+                    resourceController.getByKey("invalidLocation"),
                     JOptionPane.ERROR_MESSAGE);
         }
     }

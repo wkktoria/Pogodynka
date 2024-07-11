@@ -1,6 +1,7 @@
 package io.github.wkktoria.pogodynka.service;
 
 import io.github.wkktoria.pogodynka.config.LocaleConfig;
+import io.github.wkktoria.pogodynka.controller.ResourceController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
@@ -34,7 +35,7 @@ class ReportServiceTest {
     void generateCreatesPdfWithWeatherReport() throws MissingApiKeyException, InvalidLocationException, ReportGenerationProblemException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new LocaleConfig());
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
 
         // when
         reportService.generate(REPORT_FILENAME, VALID_LOCATION);
@@ -47,7 +48,7 @@ class ReportServiceTest {
     void generateThrowsInvalidLocationExceptionForNonExistentLocation() throws MissingApiKeyException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new LocaleConfig());
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
 
         // when + then
         assertThrows(InvalidLocationException.class, () -> reportService.generate(REPORT_FILENAME, NON_EXISTENT_LOCATION));

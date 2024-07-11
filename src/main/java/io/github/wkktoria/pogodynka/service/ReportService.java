@@ -6,7 +6,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfWriter;
-import io.github.wkktoria.pogodynka.config.LocaleConfig;
+import io.github.wkktoria.pogodynka.controller.ResourceController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
 import io.github.wkktoria.pogodynka.exception.ReportGenerationProblemException;
@@ -18,11 +18,11 @@ import java.io.IOException;
 
 public class ReportService {
     private final WeatherController weatherController;
-    private final LocaleConfig localeConfig;
+    private final ResourceController resourceController;
 
-    public ReportService(final WeatherController weatherController, final LocaleConfig localeConfig) {
+    public ReportService(final WeatherController weatherController, final ResourceController resourceController) {
         this.weatherController = weatherController;
-        this.localeConfig = localeConfig;
+        this.resourceController = resourceController;
     }
 
     public void generate(final String filename, final String location) throws ReportGenerationProblemException, InvalidLocationException {
@@ -38,14 +38,14 @@ public class ReportService {
 
             document.open();
             instance.getInfo().put(PdfName.CREATOR, new PdfString(Document.getVersion()));
-            document.add(new Paragraph(localeConfig.getResourceBundle().getString("weatherReport"), FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+            document.add(new Paragraph(resourceController.getByKey("weatherReport"), FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
             com.lowagie.text.Image weatherIcon = com.lowagie.text.Image.getInstance(weather.getImageSource());
             document.add(weatherIcon);
-            document.add(new Paragraph(localeConfig.getResourceBundle().getString("location") + ": " + weather.getLocation()));
-            document.add(new Paragraph(localeConfig.getResourceBundle().getString("temperature") + ": " + weather.getTemperature() + "°C"));
-            document.add(new Paragraph(localeConfig.getResourceBundle().getString("humidity") + ": " + weather.getHumidity() + "%"));
-            document.add(new Paragraph(localeConfig.getResourceBundle().getString("windSpeed") + ": " + weather.getWindSpeed() + " m/s"));
-            document.add(new Paragraph(localeConfig.getResourceBundle().getString("pressure") + ": " + weather.getPressure() + " hPa"));
+            document.add(new Paragraph(resourceController.getByKey("location") + ": " + weather.getLocation()));
+            document.add(new Paragraph(resourceController.getByKey("temperature") + ": " + weather.getTemperature() + "°C"));
+            document.add(new Paragraph(resourceController.getByKey("humidity") + ": " + weather.getHumidity() + "%"));
+            document.add(new Paragraph(resourceController.getByKey("windSpeed") + ": " + weather.getWindSpeed() + " m/s"));
+            document.add(new Paragraph(resourceController.getByKey("pressure") + ": " + weather.getPressure() + " hPa"));
         } catch (IOException e) {
             throw new ReportGenerationProblemException();
         }

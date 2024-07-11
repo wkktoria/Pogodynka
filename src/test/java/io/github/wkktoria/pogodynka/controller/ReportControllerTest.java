@@ -3,6 +3,7 @@ package io.github.wkktoria.pogodynka.controller;
 import io.github.wkktoria.pogodynka.config.LocaleConfig;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
 import io.github.wkktoria.pogodynka.service.ReportService;
+import io.github.wkktoria.pogodynka.service.ResourceService;
 import io.github.wkktoria.pogodynka.service.WeatherService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class ReportControllerTest {
     void generateReturnsTrueForSuccessfullyGeneratedReport() throws MissingApiKeyException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new LocaleConfig());
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
         var reportController = new ReportController(reportService);
 
         // when
@@ -50,7 +51,7 @@ class ReportControllerTest {
     void generateReturnsFalseForNonExistentLocation() throws MissingApiKeyException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new LocaleConfig());
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
         var reportController = new ReportController(reportService);
 
         // when
@@ -65,7 +66,7 @@ class ReportControllerTest {
     void generateLogsErrorWhenNonExistentLocation(final CapturedOutput output) throws MissingApiKeyException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new LocaleConfig());
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
         var reportController = new ReportController(reportService);
 
         // when
