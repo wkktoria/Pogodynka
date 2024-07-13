@@ -37,4 +37,19 @@ class ResourceServiceTest {
         // then
         assertEquals("Temperatura", result);
     }
+
+    @Test
+    void getByKeyReturnsValueAssociatedWithKeyForRussianLocale() {
+        // given
+        var localeConfig = new LocaleConfig();
+        localeConfig.setLocale(Locale.of("ru", "RU"));
+        var resourceService = new ResourceService(localeConfig);
+        final String key = "temperature";
+
+        // when
+        var result = resourceService.getByKey(key);
+
+        // then
+        assertEquals("температура", result);
+    }
 }

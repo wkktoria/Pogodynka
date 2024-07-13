@@ -69,7 +69,7 @@ class Pogodynka {
         FlatDarkLaf.setup();
 
         JFrame frame = new JFrame("Pogodynka");
-        frame.setSize(new Dimension(360, 280));
+        frame.setSize(new Dimension(480, 280));
         frame.setLayout(new FlowLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -100,6 +100,9 @@ class Pogodynka {
                     break;
                 case 1:
                     localeConfig.setLocale(Locale.of("pl", "PL"));
+                    break;
+                case 2:
+                    localeConfig.setLocale(Locale.of("ru", "RU"));
                     break;
                 default:
                     return;
