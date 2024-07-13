@@ -6,7 +6,7 @@ An application that provides up-to-date weather information based on the user's 
 the [OpenWeatherMap API](https://openweathermap.org/current) to fetch real-time weather data. Application also allows
 user to generate weather reports which are saved as [PDFs](demo-report.pdf).
 
-Pogodynka is multilingual, for now it supports only English and Polish.
+Pogodynka is multilingual, for now it supports only English, Polish, and Russian.
 
 ## Building
 
