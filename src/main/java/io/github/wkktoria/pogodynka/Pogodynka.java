@@ -270,11 +270,13 @@ class Pogodynka {
                 resourceController.getByKey("configureDefaultLocation"),
                 JOptionPane.QUESTION_MESSAGE);
 
-        if (location != null) {
-            WordUtils.capitalizeFully(location);
+        if (location == null || location.isEmpty()) {
+            return;
         }
 
-        if (location != null && locationPreferencesController.setLocation(location)) {
+        WordUtils.capitalizeFully(location);
+
+        if (locationPreferencesController.setLocation(location)) {
             JOptionPane.showMessageDialog(null,
                     resourceController.getByKey("defaultLocationSetSuccessfullyTo") + " " + location + ".",
                     resourceController.getByKey("defaultLocationSetUp"),
