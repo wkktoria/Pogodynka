@@ -38,7 +38,6 @@ class Pogodynka {
     private static Weather weather;
 
     private static JButton configureDefaultLocationButton;
-    private static JButton changeLanguageButton;
     private static JButton searchButton;
     private static JButton generateReportButton;
 
@@ -85,34 +84,37 @@ class Pogodynka {
         configureDefaultLocationButton = new JButton("Configure default location");
         configureDefaultLocationButton.addActionListener(e -> configureDefaultLocation());
 
-        changeLanguageButton = new JButton("Change language");
-        changeLanguageButton.addActionListener(e -> {
-            Object[] languages = resourceController.getByKey("availableLanguages").split(",");
+        String[] languages = resourceController.getByKey("availableLanguages").split(",");
+        JList<String> languageList = new JList<>(languages);
+        languageList.setVisibleRowCount(1);
+        languageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane languageListScrollPane = new JScrollPane(languageList);
 
-            int languageIndex = JOptionPane.showOptionDialog(null,
-                    resourceController.getByKey("selectLanguage") + ": ",
-                    resourceController.getByKey("changeLanguage"),
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, languages, languages[0]);
+        languageList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                JList<?> source = (JList<?>) e.getSource();
+                int languageIndex = source.getSelectedIndex();
 
-            switch (languageIndex) {
-                case 0:
-                    localeConfig.setLocale(Locale.ENGLISH);
-                    break;
-                case 1:
-                    localeConfig.setLocale(Locale.of("pl", "PL"));
-                    break;
-                case 2:
-                    localeConfig.setLocale(Locale.of("ru", "RU"));
-                    break;
-                default:
-                    return;
+                switch (languageIndex) {
+                    case 0:
+                        localeConfig.setLocale(Locale.ENGLISH);
+                        break;
+                    case 1:
+                        localeConfig.setLocale(Locale.of("pl", "PL"));
+                        break;
+                    case 2:
+                        localeConfig.setLocale(Locale.of("ru", "RU"));
+                        break;
+                    default:
+                        return;
+                }
+
+                update();
             }
-
-            update();
         });
 
         toolBar.add(configureDefaultLocationButton);
-        toolBar.add(changeLanguageButton);
+        toolBar.add(languageListScrollPane);
 
         JPanel locationPanel = new JPanel();
 
@@ -193,7 +195,6 @@ class Pogodynka {
 
     private static void update() {
         configureDefaultLocationButton.setText(resourceController.getByKey("configureDefaultLocation"));
-        changeLanguageButton.setText(resourceController.getByKey("changeLanguage"));
         searchButton.setText(resourceController.getByKey("search"));
         generateReportButton.setText(resourceController.getByKey("generateReport"));
 
