@@ -39,5 +39,5 @@ export WEATHER_API_KEY=YOUR_API_KEY
 > Running application may require to set up the API key.
 
 ```shell
-java -jar pogodynka-1.0.2-jar-with-dependencies.jar
+java -jar pogodynka-1.0.3-jar-with-dependencies.jar
 ```
