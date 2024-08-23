@@ -7,7 +7,7 @@
     <groupId>io.github.wkktoria</groupId>
     <name>Pogodynka</name>
     <artifactId>pogodynka</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <description>Desktop weather application</description>
     <packaging>jar</packaging>
 
