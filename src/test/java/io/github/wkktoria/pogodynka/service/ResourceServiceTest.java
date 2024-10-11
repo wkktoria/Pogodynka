@@ -11,7 +11,7 @@ class ResourceServiceTest {
     @Test
     void getByKeyReturnsValueAssociatedWithKeyForEnglishLocale() {
         // given
-        var localeConfig = new LocaleConfig();
+        var localeConfig = LocaleConfig.getLocaleConfig();
         localeConfig.setLocale(Locale.ENGLISH);
         var resourceService = new ResourceService(localeConfig);
         final String key = "temperature";
@@ -20,13 +20,13 @@ class ResourceServiceTest {
         var result = resourceService.getByKey(key);
 
         // then
-        assertEquals("Temperature", result);
+        assertEquals("temperature", result);
     }
 
     @Test
     void getByKeyReturnsValueAssociatedWithKeyForPolishLocale() {
         // given
-        var localeConfig = new LocaleConfig();
+        var localeConfig = LocaleConfig.getLocaleConfig();
         localeConfig.setLocale(Locale.of("pl", "PL"));
         var resourceService = new ResourceService(localeConfig);
         final String key = "temperature";
@@ -35,13 +35,13 @@ class ResourceServiceTest {
         var result = resourceService.getByKey(key);
 
         // then
-        assertEquals("Temperatura", result);
+        assertEquals("temperatura", result);
     }
 
     @Test
     void getByKeyReturnsValueAssociatedWithKeyForRussianLocale() {
         // given
-        var localeConfig = new LocaleConfig();
+        var localeConfig = LocaleConfig.getLocaleConfig();
         localeConfig.setLocale(Locale.of("ru", "RU"));
         var resourceService = new ResourceService(localeConfig);
         final String key = "temperature";

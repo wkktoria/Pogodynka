@@ -13,6 +13,7 @@ import io.github.wkktoria.pogodynka.service.LocationPreferencesService;
 import io.github.wkktoria.pogodynka.service.ReportService;
 import io.github.wkktoria.pogodynka.service.ResourceService;
 import io.github.wkktoria.pogodynka.service.WeatherService;
+import io.github.wkktoria.pogodynka.view.MainFrame;
 import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,30 +33,16 @@ class Pogodynka {
     private static final WeatherController weatherController;
     private static final ReportController reportController;
     private static final LocationPreferencesController locationPreferencesController;
-    private static final LocaleConfig localeConfig;
     private static final ResourceController resourceController;
-
-    private static Weather weather;
-
-    private static JButton configureDefaultLocationButton;
-    private static JButton searchButton;
-    private static JButton generateReportButton;
-
-    private static JLabel temperatureLabel;
-    private static JLabel humidityLabel;
-    private static JLabel windSpeedLabel;
-    private static JLabel pressureLabel;
 
     static {
         try {
-            localeConfig = new LocaleConfig();
-            resourceController = new ResourceController(new ResourceService(localeConfig));
+            resourceController = new ResourceController(new ResourceService(LocaleConfig.getLocaleConfig()));
             weatherController = new WeatherController(new WeatherService());
             reportController = new ReportController(new ReportService(weatherController, resourceController));
             locationPreferencesController = new LocationPreferencesController(new LocationPreferencesService(weatherController));
-            weather = weatherController.getWeather(locationPreferencesController.getLocation());
 
-            if (weather == null) {
+            if (weatherController.getWeather(locationPreferencesController.getLocation()) == null) {
                 throw new ApiProblemException("Couldn't get weather information");
             }
         } catch (MissingApiKeyException | ApiProblemException e) {
@@ -66,228 +53,9 @@ class Pogodynka {
 
     public static void main(String[] args) {
         FlatDarkLaf.setup();
-
-        JFrame frame = new JFrame("Pogodynka");
-        frame.setSize(new Dimension(480, 280));
-        frame.setLayout(new FlowLayout());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.setRollover(true);
-
-        configureDefaultLocationButton = new JButton();
-        configureDefaultLocationButton.addActionListener(e -> configureDefaultLocation());
-
-        String[] languages = resourceController.getByKey("availableLanguages").split(",");
-        JList<String> languageList = new JList<>(languages);
-        languageList.setVisibleRowCount(1);
-        languageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane languageListScrollPane = new JScrollPane(languageList);
-
-        languageList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                JList<?> source = (JList<?>) e.getSource();
-                int languageIndex = source.getSelectedIndex();
-
-                switch (languageIndex) {
-                    case 0:
-                        localeConfig.setLocale(Locale.ENGLISH);
-                        break;
-                    case 1:
-                        localeConfig.setLocale(Locale.of("pl", "PL"));
-                        break;
-                    case 2:
-                        localeConfig.setLocale(Locale.of("ru", "RU"));
-                        break;
-                    default:
-                        return;
-                }
-
-                update();
-            }
-        });
-
-        toolBar.add(configureDefaultLocationButton);
-        toolBar.add(languageListScrollPane);
-
-        JPanel locationPanel = new JPanel();
-
-        JLabel imageLabel = new JLabel();
-        setImageLabel(imageLabel, locationPreferencesController.getLocation());
-        JLabel locationLabel = new JLabel(locationPreferencesController.getLocation());
-
-        locationPanel.add(imageLabel);
-        locationPanel.add(locationLabel);
-
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        temperatureLabel = new JLabel();
-        temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        humidityLabel = new JLabel();
-        humidityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        windSpeedLabel = new JLabel();
-        windSpeedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pressureLabel = new JLabel();
-        pressureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        infoPanel.add(locationPanel);
-        infoPanel.add(temperatureLabel);
-        infoPanel.add(temperatureLabel);
-        infoPanel.add(humidityLabel);
-        infoPanel.add(windSpeedLabel);
-        infoPanel.add(pressureLabel);
-
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new FlowLayout());
-        inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JTextField locationField = new JTextField();
-        locationField.setColumns(15);
-        locationField.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(final KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyPressed(final KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    searchWeather(locationField, locationLabel
-                    );
-                }
-            }
-
-            @Override
-            public void keyReleased(final KeyEvent e) {
-
-            }
-        });
-        searchButton = new JButton();
-        searchButton.addActionListener(e -> searchWeather(locationField, locationLabel
-        ));
-
-        inputPanel.add(locationField);
-        inputPanel.add(searchButton);
-
-        generateReportButton = new JButton();
-        generateReportButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        generateReportButton.addActionListener(e -> generateReport(locationLabel));
-
-        panel.add(toolBar);
-        panel.add(infoPanel);
-        panel.add(inputPanel);
-        panel.add(generateReportButton);
-
-        frame.add(panel);
-
-        update();
-
-        frame.setVisible(true);
-    }
-
-    private static void update() {
-        configureDefaultLocationButton.setText(resourceController.getByKey("configureDefaultLocation", ResourceController.Case.CAPITALIZED_CASE));
-        searchButton.setText(resourceController.getByKey("search", ResourceController.Case.CAPITALIZED_CASE));
-        generateReportButton.setText(WordUtils.capitalize(resourceController.getByKey("generateReport", ResourceController.Case.CAPITALIZED_CASE)));
-
-        temperatureLabel.setText(resourceController.getByKey("temperature", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.temperature() + "°C");
-        humidityLabel.setText(resourceController.getByKey("humidity", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.humidity() + "%");
-        windSpeedLabel.setText(resourceController.getByKey("windSpeed", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.windSpeed() + " m/s");
-        pressureLabel.setText(resourceController.getByKey("pressure", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.pressure() + " hPa");
-    }
-
-    private static void setImageLabel(JLabel imageLabel, final String location) {
-        try {
-            Image image = ImageIO.read(new URI(weatherController.getWeather(location).imageSource()).toURL());
-            imageLabel.setIcon(new ImageIcon(image));
-        } catch (IOException | URISyntaxException e) {
-            LOGGER.error("Couldn't load image", e);
-        }
-    }
-
-    private static void searchWeather(JTextField locationField, JLabel locationLabel) {
-        String location = locationField.getText();
-
-        if (location.isEmpty()) {
-            return;
-        }
-
-        weather = weatherController.getWeather(location);
-
-        if (weather == null) {
-            JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("couldNotFindWeatherInformationFor", ResourceController.Case.SENTENCE_CASE) + " " + location + ".",
-                    resourceController.getByKey("invalidLocation", ResourceController.Case.CAPITALIZED_CASE),
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        locationLabel.setText(weather.location());
-        locationField.setText("");
-
-        update();
-    }
-
-    private static void generateReport(final JLabel locationLabel) {
-        String filename = JOptionPane.showInputDialog(null,
-                resourceController.getByKey("reportFilename", ResourceController.Case.CAPITALIZED_CASE) + ": ",
-                resourceController.getByKey("chooseReportFilename", ResourceController.Case.CAPITALIZED_CASE),
-                JOptionPane.QUESTION_MESSAGE);
-
-        if (filename == null || filename.isEmpty()) {
-            return;
-        }
-
-        String location = locationLabel.getText();
-
-        if (location == null || location.isEmpty()) {
-            return;
-        }
-
-        if (reportController.generate(filename, location)) {
-            JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("reportWasSuccessfullyGenerated", ResourceController.Case.SENTENCE_CASE) + ".",
-                    resourceController.getByKey("reportGenerated", ResourceController.Case.CAPITALIZED_CASE),
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("couldNotGenerateReport", ResourceController.Case.SENTENCE_CASE) + ".",
-                    resourceController.getByKey("reportGenerationFailed", ResourceController.Case.CAPITALIZED_CASE),
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private static void configureDefaultLocation() {
-        String location = JOptionPane.showInputDialog(null,
-                resourceController.getByKey("defaultLocation", ResourceController.Case.CAPITALIZED_CASE) + ": ",
-                resourceController.getByKey("configureDefaultLocation", ResourceController.Case.CAPITALIZED_CASE),
-                JOptionPane.QUESTION_MESSAGE);
-
-        if (location == null || location.isEmpty()) {
-            return;
-        }
-
-        location = WordUtils.capitalizeFully(location);
-
-        if (locationPreferencesController.setLocation(location)) {
-            JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("defaultLocationSetSuccessfullyTo", ResourceController.Case.SENTENCE_CASE) + " " + location + ".",
-                    resourceController.getByKey("defaultLocationSetUp", ResourceController.Case.CAPITALIZED_CASE),
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("couldNotSetDefaultLocationTo", ResourceController.Case.SENTENCE_CASE) + " " + location + ".",
-                    resourceController.getByKey("invalidLocation", ResourceController.Case.CAPITALIZED_CASE),
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        MainFrame frame = new MainFrame("Pogodynka", resourceController,
+                locationPreferencesController, weatherController, reportController);
+        frame.showFrame();
     }
 }
 

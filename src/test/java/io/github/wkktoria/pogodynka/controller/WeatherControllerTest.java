@@ -24,12 +24,12 @@ class WeatherControllerTest {
 
         // then
         assertNotNull(result);
-        assertEquals(VALID_LOCATION, result.location());
-        assertNotNull(result.temperature());
-        assertNotNull(result.humidity());
-        assertNotNull(result.imageSource());
-        assertNotNull(result.windSpeed());
-        assertNotNull(result.pressure());
+        assertEquals(VALID_LOCATION, result.getLocation());
+        assertNotNull(result.getTemperature());
+        assertNotNull(result.getHumidity());
+        assertNotNull(result.getImageSource());
+        assertNotNull(result.getWindSpeed());
+        assertNotNull(result.getPressure());
     }
 
     @Test

@@ -6,10 +6,15 @@ import java.util.ResourceBundle;
 public class LocaleConfig {
     private Locale locale;
     private ResourceBundle resourceBundle;
+    private static final LocaleConfig INSTANCE = new LocaleConfig();
 
-    public LocaleConfig() {
+    private LocaleConfig() {
         this.locale = Locale.getDefault();
         resourceBundle = ResourceBundle.getBundle("pogodynka.resource", locale);
+    }
+
+    public static LocaleConfig getLocaleConfig() {
+        return INSTANCE;
     }
 
     public void setLocale(final Locale locale) {

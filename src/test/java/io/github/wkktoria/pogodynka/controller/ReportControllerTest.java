@@ -37,7 +37,7 @@ class ReportControllerTest {
     void generateReturnsTrueForSuccessfullyGeneratedReport() throws MissingApiKeyException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(LocaleConfig.getLocaleConfig())));
         var reportController = new ReportController(reportService);
 
         // when
@@ -51,7 +51,7 @@ class ReportControllerTest {
     void generateReturnsFalseForNonExistentLocation() throws MissingApiKeyException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(LocaleConfig.getLocaleConfig())));
         var reportController = new ReportController(reportService);
 
         // when
@@ -66,7 +66,7 @@ class ReportControllerTest {
     void generateLogsErrorWhenNonExistentLocation(final CapturedOutput output) throws MissingApiKeyException {
         // given
         var weatherController = new WeatherController(new WeatherService());
-        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(new LocaleConfig())));
+        var reportService = new ReportService(weatherController, new ResourceController(new ResourceService(LocaleConfig.getLocaleConfig())));
         var reportController = new ReportController(reportService);
 
         // when

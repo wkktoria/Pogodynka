@@ -15,7 +15,7 @@ class ResourceControllerTest {
     @Test
     void getByKeyReturnsValueAssociatedWithKey() {
         // given
-        var localeConfig = new LocaleConfig();
+        var localeConfig = LocaleConfig.getLocaleConfig();
         localeConfig.setLocale(Locale.ENGLISH);
         var resourceController = new ResourceController(new ResourceService(localeConfig));
         final String key = "temperature";
@@ -30,7 +30,7 @@ class ResourceControllerTest {
     @Test
     void getByKeyReturnsValueAssociatedWithKeyInLowercase() {
         // given
-        var localeConfig = new LocaleConfig();
+        var localeConfig = LocaleConfig.getLocaleConfig();
         localeConfig.setLocale(Locale.ENGLISH);
         var resourceController = new ResourceController(new ResourceService(localeConfig));
         final String key = "temperature";
@@ -45,7 +45,7 @@ class ResourceControllerTest {
     @Test
     void getByKeyReturnsValueAssociatedWithKeyInUppercase() {
         // given
-        var localeConfig = new LocaleConfig();
+        var localeConfig = LocaleConfig.getLocaleConfig();
         localeConfig.setLocale(Locale.ENGLISH);
         var resourceController = new ResourceController(new ResourceService(localeConfig));
         final String key = "temperature";
@@ -60,7 +60,7 @@ class ResourceControllerTest {
     @Test
     void getByKeyReturnsNullForNonExistentKey() {
         // given
-        var resourceController = new ResourceController(new ResourceService(new LocaleConfig()));
+        var resourceController = new ResourceController(new ResourceService(LocaleConfig.getLocaleConfig()));
         final String key = "nonexistent";
 
         // when
@@ -74,7 +74,7 @@ class ResourceControllerTest {
     @ExtendWith(OutputCaptureExtension.class)
     void getByKeyLogsErrorWhenNonExistentKey(final CapturedOutput output) {
         // given
-        var resourceController = new ResourceController(new ResourceService(new LocaleConfig()));
+        var resourceController = new ResourceController(new ResourceService(LocaleConfig.getLocaleConfig()));
         final String key = "nonexistent";
 
         // when

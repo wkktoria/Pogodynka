@@ -78,8 +78,19 @@ public class WeatherService {
 
         WeatherApiResponse apiResponse = gson.fromJson(responseBody, WeatherApiResponse.class);
 
-        return new Weather(apiResponse.getName(), apiResponse.getMain().getFeelsLike(),
-                apiResponse.getMain().getHumidity(), getWeatherImageSource(apiResponse.getWeather().getFirst().getIcon()),
-                apiResponse.getWind().getSpeed(), apiResponse.getMain().getPressure());
+        Weather weather = Weather.getWeather();
+
+        weather.setLocation(apiResponse.getName());
+        weather.setImageSource(getWeatherImageSource(apiResponse.getWeather().getFirst().getIcon()));
+        weather.setTemperature(apiResponse.getMain().getFeelsLike());
+        weather.setHumidity(apiResponse.getMain().getHumidity());
+        weather.setWindSpeed(apiResponse.getWind().getSpeed());
+        weather.setPressure(apiResponse.getMain().getPressure());
+
+        return weather;
+
+//        return new Weather(apiResponse.getName(), apiResponse.getMain().getFeelsLike(),
+//                apiResponse.getMain().getHumidity(), getWeatherImageSource(apiResponse.getWeather().getFirst().getIcon()),
+//                apiResponse.getWind().getSpeed(), apiResponse.getMain().getPressure());
     }
 }
