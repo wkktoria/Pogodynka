@@ -81,7 +81,7 @@ class Pogodynka {
         toolBar.setFloatable(false);
         toolBar.setRollover(true);
 
-        configureDefaultLocationButton = new JButton("Configure default location");
+        configureDefaultLocationButton = new JButton();
         configureDefaultLocationButton.addActionListener(e -> configureDefaultLocation());
 
         String[] languages = resourceController.getByKey("availableLanguages").split(",");
@@ -129,13 +129,13 @@ class Pogodynka {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        temperatureLabel = new JLabel("Temperature");
+        temperatureLabel = new JLabel();
         temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        humidityLabel = new JLabel("Humidity");
+        humidityLabel = new JLabel();
         humidityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        windSpeedLabel = new JLabel("Wind speed");
+        windSpeedLabel = new JLabel();
         windSpeedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pressureLabel = new JLabel("Pressure");
+        pressureLabel = new JLabel();
         pressureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         infoPanel.add(locationPanel);
@@ -170,14 +170,14 @@ class Pogodynka {
 
             }
         });
-        searchButton = new JButton("Search");
+        searchButton = new JButton();
         searchButton.addActionListener(e -> searchWeather(locationField, locationLabel
         ));
 
         inputPanel.add(locationField);
         inputPanel.add(searchButton);
 
-        generateReportButton = new JButton("Generate report");
+        generateReportButton = new JButton();
         generateReportButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         generateReportButton.addActionListener(e -> generateReport(locationLabel));
 
@@ -194,19 +194,19 @@ class Pogodynka {
     }
 
     private static void update() {
-        configureDefaultLocationButton.setText(resourceController.getByKey("configureDefaultLocation"));
-        searchButton.setText(resourceController.getByKey("search"));
-        generateReportButton.setText(resourceController.getByKey("generateReport"));
+        configureDefaultLocationButton.setText(resourceController.getByKey("configureDefaultLocation", ResourceController.Case.CAPITALIZED_CASE));
+        searchButton.setText(resourceController.getByKey("search", ResourceController.Case.CAPITALIZED_CASE));
+        generateReportButton.setText(WordUtils.capitalize(resourceController.getByKey("generateReport", ResourceController.Case.CAPITALIZED_CASE)));
 
-        temperatureLabel.setText(resourceController.getByKey("temperature") + ": " + weather.getTemperature() + "°C");
-        humidityLabel.setText(resourceController.getByKey("humidity") + ": " + weather.getHumidity() + "%");
-        windSpeedLabel.setText(resourceController.getByKey("windSpeed") + ": " + weather.getWindSpeed() + " m/s");
-        pressureLabel.setText(resourceController.getByKey("pressure") + ": " + weather.getPressure() + " hPa");
+        temperatureLabel.setText(resourceController.getByKey("temperature", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.temperature() + "°C");
+        humidityLabel.setText(resourceController.getByKey("humidity", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.humidity() + "%");
+        windSpeedLabel.setText(resourceController.getByKey("windSpeed", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.windSpeed() + " m/s");
+        pressureLabel.setText(resourceController.getByKey("pressure", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.pressure() + " hPa");
     }
 
     private static void setImageLabel(JLabel imageLabel, final String location) {
         try {
-            Image image = ImageIO.read(new URI(weatherController.getWeather(location).getImageSource()).toURL());
+            Image image = ImageIO.read(new URI(weatherController.getWeather(location).imageSource()).toURL());
             imageLabel.setIcon(new ImageIcon(image));
         } catch (IOException | URISyntaxException e) {
             LOGGER.error("Couldn't load image", e);
@@ -224,13 +224,13 @@ class Pogodynka {
 
         if (weather == null) {
             JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("couldNotFindWeatherInformationFor") + " " + location + ".",
-                    resourceController.getByKey("invalidLocation"),
+                    resourceController.getByKey("couldNotFindWeatherInformationFor", ResourceController.Case.SENTENCE_CASE) + " " + location + ".",
+                    resourceController.getByKey("invalidLocation", ResourceController.Case.CAPITALIZED_CASE),
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        locationLabel.setText(weather.getLocation());
+        locationLabel.setText(weather.location());
         locationField.setText("");
 
         update();
@@ -238,8 +238,8 @@ class Pogodynka {
 
     private static void generateReport(final JLabel locationLabel) {
         String filename = JOptionPane.showInputDialog(null,
-                resourceController.getByKey("reportFilename") + ": ",
-                resourceController.getByKey("chooseReportFilename"),
+                resourceController.getByKey("reportFilename", ResourceController.Case.CAPITALIZED_CASE) + ": ",
+                resourceController.getByKey("chooseReportFilename", ResourceController.Case.CAPITALIZED_CASE),
                 JOptionPane.QUESTION_MESSAGE);
 
         if (filename == null || filename.isEmpty()) {
@@ -254,38 +254,38 @@ class Pogodynka {
 
         if (reportController.generate(filename, location)) {
             JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("reportWasSuccessfullyGenerated") + ".",
-                    resourceController.getByKey("reportGenerated"),
+                    resourceController.getByKey("reportWasSuccessfullyGenerated", ResourceController.Case.SENTENCE_CASE) + ".",
+                    resourceController.getByKey("reportGenerated", ResourceController.Case.CAPITALIZED_CASE),
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("couldNotGenerateReport") + ".",
-                    resourceController.getByKey("reportGenerationFailed"),
+                    resourceController.getByKey("couldNotGenerateReport", ResourceController.Case.SENTENCE_CASE) + ".",
+                    resourceController.getByKey("reportGenerationFailed", ResourceController.Case.CAPITALIZED_CASE),
                     JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private static void configureDefaultLocation() {
         String location = JOptionPane.showInputDialog(null,
-                resourceController.getByKey("defaultLocation") + ": ",
-                resourceController.getByKey("configureDefaultLocation"),
+                resourceController.getByKey("defaultLocation", ResourceController.Case.CAPITALIZED_CASE) + ": ",
+                resourceController.getByKey("configureDefaultLocation", ResourceController.Case.CAPITALIZED_CASE),
                 JOptionPane.QUESTION_MESSAGE);
 
         if (location == null || location.isEmpty()) {
             return;
         }
 
-        WordUtils.capitalizeFully(location);
+        location = WordUtils.capitalizeFully(location);
 
         if (locationPreferencesController.setLocation(location)) {
             JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("defaultLocationSetSuccessfullyTo") + " " + location + ".",
-                    resourceController.getByKey("defaultLocationSetUp"),
+                    resourceController.getByKey("defaultLocationSetSuccessfullyTo", ResourceController.Case.SENTENCE_CASE) + " " + location + ".",
+                    resourceController.getByKey("defaultLocationSetUp", ResourceController.Case.CAPITALIZED_CASE),
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null,
-                    resourceController.getByKey("couldNotSetDefaultLocationTo") + " " + location + ".",
-                    resourceController.getByKey("invalidLocation"),
+                    resourceController.getByKey("couldNotSetDefaultLocationTo", ResourceController.Case.SENTENCE_CASE) + " " + location + ".",
+                    resourceController.getByKey("invalidLocation", ResourceController.Case.CAPITALIZED_CASE),
                     JOptionPane.ERROR_MESSAGE);
         }
     }

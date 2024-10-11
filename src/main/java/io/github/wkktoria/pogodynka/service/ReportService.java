@@ -38,14 +38,14 @@ public class ReportService {
 
             document.open();
             instance.getInfo().put(PdfName.CREATOR, new PdfString(Document.getVersion()));
-            document.add(new Paragraph(resourceController.getByKey("weatherReport"), FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
-            com.lowagie.text.Image weatherIcon = com.lowagie.text.Image.getInstance(weather.getImageSource());
+            document.add(new Paragraph(resourceController.getByKey("weatherReport", ResourceController.Case.UPPER_CASE), FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+            com.lowagie.text.Image weatherIcon = com.lowagie.text.Image.getInstance(weather.imageSource());
             document.add(weatherIcon);
-            document.add(new Paragraph(resourceController.getByKey("location") + ": " + weather.getLocation()));
-            document.add(new Paragraph(resourceController.getByKey("temperature") + ": " + weather.getTemperature() + "°C"));
-            document.add(new Paragraph(resourceController.getByKey("humidity") + ": " + weather.getHumidity() + "%"));
-            document.add(new Paragraph(resourceController.getByKey("windSpeed") + ": " + weather.getWindSpeed() + " m/s"));
-            document.add(new Paragraph(resourceController.getByKey("pressure") + ": " + weather.getPressure() + " hPa"));
+            document.add(new Paragraph(resourceController.getByKey("location", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.location()));
+            document.add(new Paragraph(resourceController.getByKey("temperature", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.temperature() + "°C"));
+            document.add(new Paragraph(resourceController.getByKey("humidity", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.humidity() + "%"));
+            document.add(new Paragraph(resourceController.getByKey("windSpeed", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.windSpeed() + " m/s"));
+            document.add(new Paragraph(resourceController.getByKey("pressure", ResourceController.Case.CAPITALIZED_CASE) + ": " + weather.pressure() + " hPa"));
         } catch (IOException e) {
             throw new ReportGenerationProblemException();
         }

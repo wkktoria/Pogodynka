@@ -24,7 +24,37 @@ class ResourceControllerTest {
         var result = resourceController.getByKey(key);
 
         // then
-        assertEquals("Temperature", result);
+        assertEquals("temperature", result);
+    }
+
+    @Test
+    void getByKeyReturnsValueAssociatedWithKeyInLowercase() {
+        // given
+        var localeConfig = new LocaleConfig();
+        localeConfig.setLocale(Locale.ENGLISH);
+        var resourceController = new ResourceController(new ResourceService(localeConfig));
+        final String key = "temperature";
+
+        // when
+        var result = resourceController.getByKey(key, ResourceController.Case.LOWER_CASE);
+
+        // then
+        assertEquals("temperature", result);
+    }
+
+    @Test
+    void getByKeyReturnsValueAssociatedWithKeyInUppercase() {
+        // given
+        var localeConfig = new LocaleConfig();
+        localeConfig.setLocale(Locale.ENGLISH);
+        var resourceController = new ResourceController(new ResourceService(localeConfig));
+        final String key = "temperature";
+
+        // when
+        var result = resourceController.getByKey(key, ResourceController.Case.UPPER_CASE);
+
+        // then
+        assertEquals("TEMPERATURE", result);
     }
 
     @Test
