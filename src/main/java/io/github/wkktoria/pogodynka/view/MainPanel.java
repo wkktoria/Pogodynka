@@ -1,6 +1,6 @@
 package io.github.wkktoria.pogodynka.view;
 
-import io.github.wkktoria.pogodynka.controller.LocationPreferencesController;
+import io.github.wkktoria.pogodynka.controller.PreferencesController;
 import io.github.wkktoria.pogodynka.controller.ResourceController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 
@@ -12,10 +12,10 @@ class MainPanel extends JPanel {
     private final InfoPanel infoPanel;
     private final InputPanel inputPanel;
 
-    MainPanel(final LocationPreferencesController locationPreferencesController,
+    MainPanel(final PreferencesController preferencesController,
               final WeatherController weatherController,
               final ResourceController resourceController) {
-        locationPanel = new LocationPanel(locationPreferencesController, weatherController);
+        locationPanel = new LocationPanel(preferencesController, weatherController);
         infoPanel = new InfoPanel(resourceController);
         inputPanel = new InputPanel(weatherController, resourceController);
 

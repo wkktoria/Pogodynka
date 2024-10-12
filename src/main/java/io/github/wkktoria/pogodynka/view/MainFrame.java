@@ -1,9 +1,6 @@
 package io.github.wkktoria.pogodynka.view;
 
-import io.github.wkktoria.pogodynka.controller.LocationPreferencesController;
-import io.github.wkktoria.pogodynka.controller.ReportController;
-import io.github.wkktoria.pogodynka.controller.ResourceController;
-import io.github.wkktoria.pogodynka.controller.WeatherController;
+import io.github.wkktoria.pogodynka.controller.*;
 import io.github.wkktoria.pogodynka.model.Weather;
 
 import javax.swing.*;
@@ -16,12 +13,12 @@ public class MainFrame extends JFrame {
 
     public MainFrame(final String title,
                      final ResourceController resourceController,
-                     final LocationPreferencesController locationPreferencesController,
+                     final PreferencesController preferencesController,
                      final WeatherController weatherController,
                      final ReportController reportController) {
         MainFrame.resourceController = resourceController;
-        toolbar = new Toolbar(resourceController, reportController, locationPreferencesController);
-        mainPanel = new MainPanel(locationPreferencesController, weatherController, resourceController);
+        toolbar = new Toolbar(resourceController, reportController, preferencesController);
+        mainPanel = new MainPanel(preferencesController, weatherController, resourceController);
 
         setTitle(title);
         setSize(new Dimension(560, 280));

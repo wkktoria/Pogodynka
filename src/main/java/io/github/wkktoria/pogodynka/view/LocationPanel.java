@@ -1,6 +1,6 @@
 package io.github.wkktoria.pogodynka.view;
 
-import io.github.wkktoria.pogodynka.controller.LocationPreferencesController;
+import io.github.wkktoria.pogodynka.controller.PreferencesController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +15,15 @@ import java.net.URISyntaxException;
 class LocationPanel extends JPanel {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocationPanel.class);
 
-    private final LocationPreferencesController locationPreferencesController;
+    private final PreferencesController preferencesController;
     private final WeatherController weatherController;
 
     private final JLabel locationImageLabel = new JLabel();
     private final JLabel locationLabel = new JLabel();
 
-    LocationPanel(final LocationPreferencesController locationPreferencesController,
+    LocationPanel(final PreferencesController preferencesController,
                   final WeatherController weatherController) {
-        this.locationPreferencesController = locationPreferencesController;
+        this.preferencesController = preferencesController;
         this.weatherController = weatherController;
 
         locationLabel.setText(getDefaultLocation());
@@ -34,7 +34,7 @@ class LocationPanel extends JPanel {
     }
 
     private String getDefaultLocation() {
-        return locationPreferencesController.getLocation();
+        return preferencesController.getLocation();
     }
 
     void setLocationImageLabel(final String location) {

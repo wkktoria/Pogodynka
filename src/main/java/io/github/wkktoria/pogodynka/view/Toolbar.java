@@ -1,9 +1,10 @@
 package io.github.wkktoria.pogodynka.view;
 
 import io.github.wkktoria.pogodynka.config.LocaleConfig;
-import io.github.wkktoria.pogodynka.controller.LocationPreferencesController;
+import io.github.wkktoria.pogodynka.controller.PreferencesController;
 import io.github.wkktoria.pogodynka.controller.ReportController;
 import io.github.wkktoria.pogodynka.controller.ResourceController;
+import io.github.wkktoria.pogodynka.service.PreferencesService;
 import org.apache.commons.text.WordUtils;
 
 import javax.swing.*;
@@ -13,17 +14,17 @@ import java.util.Locale;
 class Toolbar extends JToolBar {
     private final ResourceController resourceController;
     private final ReportController reportController;
-    private final LocationPreferencesController locationPreferencesController;
+    private final PreferencesController preferencesController;
 
     private final JButton configureDefaultLocationButton = new JButton();
     private final JButton generateReportButton = new JButton();
 
     Toolbar(final ResourceController resourceController,
             final ReportController reportController,
-            final LocationPreferencesController locationPreferencesController) {
+            final PreferencesController preferencesController) {
         this.resourceController = resourceController;
         this.reportController = reportController;
-        this.locationPreferencesController = locationPreferencesController;
+        this.preferencesController = preferencesController;
 
         setLayout(new BorderLayout());
 
@@ -36,13 +37,13 @@ class Toolbar extends JToolBar {
 
             switch (languageIndex) {
                 case 1:
-                    LocaleConfig.getLocaleConfig().setLocale(Locale.ENGLISH);
+                    preferencesController.setLanguage(PreferencesService.LANGUAGE.ENGLISH);
                     break;
                 case 2:
-                    LocaleConfig.getLocaleConfig().setLocale(Locale.of("pl", "PL"));
+                    preferencesController.setLanguage(PreferencesService.LANGUAGE.POLISH);
                     break;
                 case 3:
-                    LocaleConfig.getLocaleConfig().setLocale(Locale.of("ru", "RU"));
+                    preferencesController.setLanguage(PreferencesService.LANGUAGE.RUSSIAN);
                     break;
                 default:
                     return;
@@ -113,7 +114,7 @@ class Toolbar extends JToolBar {
 
         location = WordUtils.capitalizeFully(location);
 
-        if (locationPreferencesController.setLocation(location)) {
+        if (preferencesController.setLocation(location)) {
             JOptionPane.showMessageDialog(null,
                     resourceController.getByKey("defaultLocationSetSuccessfullyTo", ResourceController.Case.SENTENCE_CASE) + " " + location + ".",
                     resourceController.getByKey("defaultLocationSetUp", ResourceController.Case.CAPITALIZED_CASE),
