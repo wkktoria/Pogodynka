@@ -1,15 +1,16 @@
 package io.github.wkktoria.pogodynka.model;
 
 public class Weather {
-    private  String location;
-    private  String imageSource;
-    private  Double temperature;
-    private  Integer humidity;
-    private  Double windSpeed;
-    private  Integer pressure;
     private static final Weather INSTANCE = new Weather();
+    private String location;
+    private String imageSource;
+    private Double temperature;
+    private Integer humidity;
+    private Double windSpeed;
+    private Integer pressure;
 
-    private Weather() {}
+    private Weather() {
+    }
 
     public static Weather getWeather() {
         return INSTANCE;
@@ -62,38 +63,4 @@ public class Weather {
     public void setPressure(Integer pressure) {
         this.pressure = pressure;
     }
-
-    //    private Weather(final String location, final Double temperature, final Integer humidity, final String imageSource,
-//                   final Double windSpeed, final Integer pressure) {
-//        this.location = location;
-//        this.temperature = temperature;
-//        this.humidity = humidity;
-//        this.imageSource = imageSource;
-//        this.windSpeed = windSpeed;
-//        this.pressure = pressure;
-//    }
-//
-//    public String getLocation() {
-//        return location;
-//    }
-//
-//    public Double getTemperature() {
-//        return temperature;
-//    }
-//
-//    public Integer getHumidity() {
-//        return humidity;
-//    }
-//
-//    public String getImageSource() {
-//        return imageSource;
-//    }
-//
-//    public Double getWindSpeed() {
-//        return windSpeed;
-//    }
-//
-//    public Integer getPressure() {
-//        return pressure;
-//    }
 }

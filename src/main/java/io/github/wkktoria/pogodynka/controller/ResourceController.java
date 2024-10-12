@@ -1,7 +1,6 @@
 package io.github.wkktoria.pogodynka.controller;
 
 import io.github.wkktoria.pogodynka.service.ResourceService;
-import org.apache.commons.text.CaseUtils;
 import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

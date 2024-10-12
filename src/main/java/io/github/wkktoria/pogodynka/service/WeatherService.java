@@ -88,9 +88,5 @@ public class WeatherService {
         weather.setPressure(apiResponse.getMain().getPressure());
 
         return weather;
-
-//        return new Weather(apiResponse.getName(), apiResponse.getMain().getFeelsLike(),
-//                apiResponse.getMain().getHumidity(), getWeatherImageSource(apiResponse.getWeather().getFirst().getIcon()),
-//                apiResponse.getWind().getSpeed(), apiResponse.getMain().getPressure());
     }
 }

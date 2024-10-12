@@ -8,25 +8,13 @@ import io.github.wkktoria.pogodynka.controller.ResourceController;
 import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.exception.ApiProblemException;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
-import io.github.wkktoria.pogodynka.model.Weather;
 import io.github.wkktoria.pogodynka.service.LocationPreferencesService;
 import io.github.wkktoria.pogodynka.service.ReportService;
 import io.github.wkktoria.pogodynka.service.ResourceService;
 import io.github.wkktoria.pogodynka.service.WeatherService;
 import io.github.wkktoria.pogodynka.view.MainFrame;
-import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Locale;
 
 class Pogodynka {
     private static final Logger LOGGER = LoggerFactory.getLogger(Pogodynka.class);
