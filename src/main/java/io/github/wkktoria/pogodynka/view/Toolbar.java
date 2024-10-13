@@ -1,29 +1,29 @@
 package io.github.wkktoria.pogodynka.view;
 
-import io.github.wkktoria.pogodynka.config.LocaleConfig;
 import io.github.wkktoria.pogodynka.controller.PreferencesController;
-import io.github.wkktoria.pogodynka.controller.ReportController;
 import io.github.wkktoria.pogodynka.controller.ResourceController;
+import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
+import io.github.wkktoria.pogodynka.exception.ReportGenerationProblemException;
+import io.github.wkktoria.pogodynka.generator.ReportGenerator;
 import io.github.wkktoria.pogodynka.service.PreferencesService;
 import org.apache.commons.text.WordUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Locale;
 
 class Toolbar extends JToolBar {
     private final ResourceController resourceController;
-    private final ReportController reportController;
+    private final ReportGenerator reportGenerator;
     private final PreferencesController preferencesController;
 
     private final JButton configureDefaultLocationButton = new JButton();
     private final JButton generateReportButton = new JButton();
 
     Toolbar(final ResourceController resourceController,
-            final ReportController reportController,
+            final ReportGenerator reportGenerator,
             final PreferencesController preferencesController) {
         this.resourceController = resourceController;
-        this.reportController = reportController;
+        this.reportGenerator = reportGenerator;
         this.preferencesController = preferencesController;
 
         setLayout(new BorderLayout());
@@ -89,12 +89,13 @@ class Toolbar extends JToolBar {
             return;
         }
 
-        if (reportController.generate(filename, location)) {
+        try {
+            reportGenerator.generate(filename, location);
             JOptionPane.showMessageDialog(null,
                     resourceController.getByKey("reportWasSuccessfullyGenerated", ResourceController.Case.SENTENCE_CASE) + ".",
                     resourceController.getByKey("reportGenerated", ResourceController.Case.CAPITALIZED_CASE),
                     JOptionPane.INFORMATION_MESSAGE);
-        } else {
+        } catch (ReportGenerationProblemException | InvalidLocationException e) {
             JOptionPane.showMessageDialog(null,
                     resourceController.getByKey("couldNotGenerateReport", ResourceController.Case.SENTENCE_CASE) + ".",
                     resourceController.getByKey("reportGenerationFailed", ResourceController.Case.CAPITALIZED_CASE),

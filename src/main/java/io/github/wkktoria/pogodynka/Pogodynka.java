@@ -5,6 +5,8 @@ import io.github.wkktoria.pogodynka.config.LocaleConfig;
 import io.github.wkktoria.pogodynka.controller.*;
 import io.github.wkktoria.pogodynka.exception.ApiProblemException;
 import io.github.wkktoria.pogodynka.exception.MissingApiKeyException;
+import io.github.wkktoria.pogodynka.generator.PdfReportGenerator;
+import io.github.wkktoria.pogodynka.generator.ReportGenerator;
 import io.github.wkktoria.pogodynka.service.*;
 import io.github.wkktoria.pogodynka.view.MainFrame;
 import org.slf4j.Logger;
@@ -13,7 +15,7 @@ import org.slf4j.LoggerFactory;
 class Pogodynka {
     private static final Logger LOGGER = LoggerFactory.getLogger(Pogodynka.class);
     private static final WeatherController weatherController;
-    private static final ReportController reportController;
+    private static final ReportGenerator reportGenerator;
     private static final PreferencesController preferencesController;
     private static final ResourceController resourceController;
 
@@ -21,7 +23,7 @@ class Pogodynka {
         try {
             resourceController = new ResourceController(new ResourceService(LocaleConfig.getLocaleConfig()));
             weatherController = new WeatherController(new WeatherService());
-            reportController = new ReportController(new ReportService(weatherController, resourceController));
+            reportGenerator = new PdfReportGenerator(weatherController, resourceController);
             preferencesController = new PreferencesController(new PreferencesService(weatherController));
 
             if (weatherController.getWeather(preferencesController.getLocation()) == null) {
@@ -36,9 +38,9 @@ class Pogodynka {
     public static void main(String[] args) {
         FlatDarkLaf.setup();
         preferencesController.setUpLanguage();
-        
+
         MainFrame frame = new MainFrame("Pogodynka", resourceController,
-                preferencesController, weatherController, reportController);
+                preferencesController, weatherController, reportGenerator);
         frame.showFrame();
     }
 }

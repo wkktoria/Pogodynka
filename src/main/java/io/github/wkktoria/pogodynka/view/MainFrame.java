@@ -1,6 +1,7 @@
 package io.github.wkktoria.pogodynka.view;
 
 import io.github.wkktoria.pogodynka.controller.*;
+import io.github.wkktoria.pogodynka.generator.ReportGenerator;
 import io.github.wkktoria.pogodynka.model.Weather;
 
 import javax.swing.*;
@@ -15,9 +16,9 @@ public class MainFrame extends JFrame {
                      final ResourceController resourceController,
                      final PreferencesController preferencesController,
                      final WeatherController weatherController,
-                     final ReportController reportController) {
+                     final ReportGenerator reportGenerator) {
         MainFrame.resourceController = resourceController;
-        toolbar = new Toolbar(resourceController, reportController, preferencesController);
+        toolbar = new Toolbar(resourceController, reportGenerator, preferencesController);
         mainPanel = new MainPanel(preferencesController, weatherController, resourceController);
 
         setTitle(title);

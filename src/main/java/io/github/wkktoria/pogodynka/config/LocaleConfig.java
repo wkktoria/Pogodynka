@@ -4,9 +4,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class LocaleConfig {
+    private static final LocaleConfig INSTANCE = new LocaleConfig();
     private Locale locale;
     private ResourceBundle resourceBundle;
-    private static final LocaleConfig INSTANCE = new LocaleConfig();
 
     private LocaleConfig() {
         this.locale = Locale.getDefault();
@@ -15,6 +15,10 @@ public class LocaleConfig {
 
     public static LocaleConfig getLocaleConfig() {
         return INSTANCE;
+    }
+
+    public Locale getLocale() {
+        return locale;
     }
 
     public void setLocale(final Locale locale) {
