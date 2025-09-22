@@ -5,8 +5,6 @@ import io.github.wkktoria.pogodynka.controller.WeatherController;
 import io.github.wkktoria.pogodynka.model.Weather;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -42,12 +40,7 @@ class InputPanel extends JPanel {
             }
         });
 
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchWeather();
-            }
-        });
+        searchButton.addActionListener(e -> searchWeather());
 
         add(locationTextField);
         add(searchButton);

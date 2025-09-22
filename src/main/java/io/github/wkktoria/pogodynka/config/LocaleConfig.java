@@ -1,8 +1,11 @@
 package io.github.wkktoria.pogodynka.config;
 
+import lombok.Getter;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+@Getter
 public class LocaleConfig {
     private static final LocaleConfig INSTANCE = new LocaleConfig();
     private Locale locale;
@@ -17,16 +20,8 @@ public class LocaleConfig {
         return INSTANCE;
     }
 
-    public Locale getLocale() {
-        return locale;
-    }
-
     public void setLocale(final Locale locale) {
         this.locale = locale;
         resourceBundle = ResourceBundle.getBundle("pogodynka.resource", locale);
-    }
-
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
     }
 }

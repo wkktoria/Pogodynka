@@ -1,5 +1,10 @@
 package io.github.wkktoria.pogodynka.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class Weather {
     private static final Weather INSTANCE = new Weather();
     private String location;
@@ -14,53 +19,5 @@ public class Weather {
 
     public static Weather getWeather() {
         return INSTANCE;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getImageSource() {
-        return imageSource;
-    }
-
-    public void setImageSource(String imageSource) {
-        this.imageSource = imageSource;
-    }
-
-    public Double getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
-    }
-
-    public Integer getHumidity() {
-        return humidity;
-    }
-
-    public void setHumidity(Integer humidity) {
-        this.humidity = humidity;
-    }
-
-    public Double getWindSpeed() {
-        return windSpeed;
-    }
-
-    public void setWindSpeed(Double windSpeed) {
-        this.windSpeed = windSpeed;
-    }
-
-    public Integer getPressure() {
-        return pressure;
-    }
-
-    public void setPressure(Integer pressure) {
-        this.pressure = pressure;
     }
 }

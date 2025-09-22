@@ -11,7 +11,6 @@ import io.github.wkktoria.pogodynka.exception.InvalidLocationException;
 import io.github.wkktoria.pogodynka.exception.ReportGenerationProblemException;
 import io.github.wkktoria.pogodynka.model.Weather;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;

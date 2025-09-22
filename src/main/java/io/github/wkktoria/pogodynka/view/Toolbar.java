@@ -7,6 +7,7 @@ import io.github.wkktoria.pogodynka.exception.ReportGenerationProblemException;
 import io.github.wkktoria.pogodynka.generator.ReportGenerator;
 import io.github.wkktoria.pogodynka.service.PreferencesService;
 import org.apache.commons.text.WordUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -33,6 +34,18 @@ class Toolbar extends JToolBar {
         setFloatable(false);
         setRollover(true);
 
+        var languagesList = getLanguagesList(preferencesController);
+
+        configureDefaultLocationButton.addActionListener(e -> configureDefaultLocation());
+        generateReportButton.addActionListener(e -> generateReport());
+
+        add(configureDefaultLocationButton, BorderLayout.WEST);
+        add(languagesList, BorderLayout.EAST);
+        add(generateReportButton, BorderLayout.CENTER);
+    }
+
+    @NotNull
+    private JComboBox<String> getLanguagesList(final PreferencesController preferencesController) {
         JComboBox<String> languagesList = new JComboBox<>(getLanguages());
         languagesList.addActionListener(e -> {
             int languageIndex = languagesList.getSelectedIndex();
@@ -54,13 +67,7 @@ class Toolbar extends JToolBar {
             languagesList.setModel(new DefaultComboBoxModel<>(getLanguages()));
             MainFrame.updateLanguage();
         });
-
-        configureDefaultLocationButton.addActionListener(e -> configureDefaultLocation());
-        generateReportButton.addActionListener(e -> generateReport());
-
-        add(configureDefaultLocationButton, BorderLayout.WEST);
-        add(languagesList, BorderLayout.EAST);
-        add(generateReportButton, BorderLayout.CENTER);
+        return languagesList;
     }
 
     JButton getConfigureDefaultLocationButton() {
