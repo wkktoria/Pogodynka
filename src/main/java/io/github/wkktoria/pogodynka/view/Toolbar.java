@@ -9,7 +9,9 @@ import io.github.wkktoria.pogodynka.service.PreferencesService;
 import org.apache.commons.text.WordUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
 
 class Toolbar extends JToolBar {
     private final ResourceController resourceController;
@@ -74,13 +76,22 @@ class Toolbar extends JToolBar {
     }
 
     private void generateReport() {
-        final String filename = JOptionPane.showInputDialog(null,
-                resourceController.getByKey("reportFilename", ResourceController.Case.CAPITALIZED_CASE) + ": ",
-                resourceController.getByKey("chooseReportFilename", ResourceController.Case.CAPITALIZED_CASE),
-                JOptionPane.QUESTION_MESSAGE);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle(
+                resourceController.getByKey("chooseReportFilename", ResourceController.Case.CAPITALIZED_CASE)
+        );
+        fileChooser.setFileFilter(new FileNameExtensionFilter("PDF", "pdf"));
 
-        if (filename == null || filename.isEmpty()) {
+        final int userSelection = fileChooser.showSaveDialog(null);
+
+        if (userSelection != JFileChooser.APPROVE_OPTION) {
             return;
+        }
+
+        File selectedFile = fileChooser.getSelectedFile();
+
+        if (!selectedFile.getName().toLowerCase().endsWith(".pdf")) {
+            selectedFile = new File(selectedFile.getParentFile(), selectedFile.getName() + ".pdf");
         }
 
         final String location = MainFrame.getMainPanel().getLocationPanel().getLocationLabel().getText();
@@ -90,7 +101,7 @@ class Toolbar extends JToolBar {
         }
 
         try {
-            reportGenerator.generate(filename, location);
+            reportGenerator.generate(selectedFile.getAbsolutePath(), location);
             JOptionPane.showMessageDialog(null,
                     resourceController.getByKey("reportWasSuccessfullyGenerated", ResourceController.Case.SENTENCE_CASE) + ".",
                     resourceController.getByKey("reportGenerated", ResourceController.Case.CAPITALIZED_CASE),

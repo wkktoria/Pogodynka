@@ -33,7 +33,7 @@ public class PdfReportGenerator implements ReportGenerator {
     }
 
     @Override
-    public void generate(String filename, String location) throws InvalidLocationException, ReportGenerationProblemException {
+    public void generate(String filePath, String location) throws InvalidLocationException, ReportGenerationProblemException {
         if (!weatherController.isValidLocation(location)) {
             throw new InvalidLocationException();
         }
@@ -41,8 +41,7 @@ public class PdfReportGenerator implements ReportGenerator {
         final Weather weather = weatherController.getWeather(location);
 
         try (Document document = new Document()) {
-            File targetFile = new File(String.format("%s.pdf", filename));
-            PdfWriter instance = PdfWriter.getInstance(document, new FileOutputStream(targetFile));
+            PdfWriter instance = PdfWriter.getInstance(document, new FileOutputStream(filePath));
 
             document.open();
             instance.getInfo().put(PdfName.CREATOR, new PdfString(Document.getVersion()));
